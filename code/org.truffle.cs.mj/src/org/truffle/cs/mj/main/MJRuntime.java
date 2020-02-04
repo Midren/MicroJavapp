@@ -22,7 +22,7 @@ public class MJRuntime {
 // parseRDBenchmark(divAlgorithm);
     }
 
-    static String Simlest = ""//
+    static String Simplest = ""//
                     + "program Empty{ "//
                     + "    void main(int i) int p; { \n"//
                     + "        p = 0;\n"//
@@ -48,13 +48,13 @@ public class MJRuntime {
                     + "}";
 
     static String whileLoopRD = "program P {"//
-                    + "             void foo(int i,int j) {print(i+j);}" //
+                    + " void foo(int i,int j) {print(i+j);return;}" //
                     + "             void main () int p;{ "//
-                    + "                 p = 0; "//
-                    + "                 while(p<10) {"//
-                    + "                     print(p); "//
-                    + "                     p = p + 1;"//
-                    + "                     foo(p,2);" //
+                    + "                 p = 0;\n"//
+                    + "                 while(p < 10) {"//
+                    + "                     print(p);\n"//
+                    + "                     p = p + 1;\n"//
+                    + "                     foo(p,2);\n" //
                     + "                 }"//
                     + "             }"//
                     + "}";
@@ -126,7 +126,7 @@ public class MJRuntime {
         System.out.println("Calling main function...");
         CallTarget callTarget = runtime.createCallTarget(parser.getMain());
         for (int i = 0; i < 1000; i++) {
-            callTarget.call(i);
+            callTarget.call();
         }
     }
 

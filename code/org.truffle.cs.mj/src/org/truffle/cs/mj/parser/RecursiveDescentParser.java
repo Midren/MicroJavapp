@@ -544,10 +544,9 @@ public final class RecursiveDescentParser {
                 if (sym != semicolon) {
                     retValue = Expr();
                 } else {
-                    break;
                 }
-                check(semicolon);
                 curStatementNode = new MJReturnNode(retValue);
+                check(semicolon);
                 break;
             // ----- "read" "(" Designator ")" ";"
             case read:
@@ -719,7 +718,7 @@ public final class RecursiveDescentParser {
                 } else {
                     // normal variable node
 
-                    int index = parameterNames != null ? parameterNames.indexOf(varname) : 0;
+                    int index = parameterNames != null ? parameterNames.indexOf(varname) : -1;
                     if (index >= 0) {
                         expressionNode = new MJReadParameterNode(index);
                     } else {
