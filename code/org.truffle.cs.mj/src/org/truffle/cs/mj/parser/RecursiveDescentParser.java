@@ -405,8 +405,8 @@ public final class RecursiveDescentParser {
     MJFunction currentFun = null;
 
     private MJFunction MethodDecl() {
-// currentFrameDescriptor = new FrameDescriptor();
-        currentFrameDescriptor = globalFrameDescriptor.copy();
+        currentFrameDescriptor = new FrameDescriptor();
+// currentFrameDescriptor = globalFrameDescriptor.copy();
         if (sym == ident) {
             Type();
         } else if (sym == void_) {
@@ -442,7 +442,6 @@ public final class RecursiveDescentParser {
             check(ident);
             parNames.add(t.str);
         }
-        char a = 5, b = 2;
         return parNames;
     }
 
@@ -763,10 +762,10 @@ public final class RecursiveDescentParser {
             case number:
                 scan();
                 expressionNode = MJConstantNodeFactory.IntNodeGen.create(t.val);
-//                expressionNode = MJConstantIntNodeGen.create(t.val);
                 break;
             case charConst:
                 scan();
+                expressionNode = MJConstantNodeFactory.CharNodeGen.create((char) t.val);
                 break;
             case new_:
                 scan();

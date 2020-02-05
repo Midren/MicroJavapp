@@ -74,7 +74,7 @@ public final class MJVariableNodeFactory {
         @Override
         public Object execute(VirtualFrame frameValue) {
             int state = state_;
-            if ((state & 0b1110) == 0 /* only-active execute(VirtualFrame, int) */ && state != 0  /* is-not execute(VirtualFrame, int) && execute(VirtualFrame, char) && execute(VirtualFrame, long) && execute(VirtualFrame, Object) */) {
+            if ((state & 0b1110) == 0 /* only-active execute(VirtualFrame, int) */ && state != 0  /* is-not execute(VirtualFrame, int) && execute(VirtualFrame, char) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
                 return execute_int0(frameValue, state);
             } else {
                 return execute_generic1(frameValue, state);
@@ -97,8 +97,8 @@ public final class MJVariableNodeFactory {
                 char valueValue__ = (char) valueValue_;
                 return execute(frameValue, valueValue__);
             }
-            if ((state & 0b100) != 0 /* is-active execute(VirtualFrame, long) */ && valueValue_ instanceof Long) {
-                long valueValue__ = (long) valueValue_;
+            if ((state & 0b100) != 0 /* is-active execute(VirtualFrame, double) */ && valueValue_ instanceof Double) {
+                double valueValue__ = (double) valueValue_;
                 return execute(frameValue, valueValue__);
             }
             if ((state & 0b1000) != 0 /* is-active execute(VirtualFrame, Object) */) {
@@ -120,9 +120,9 @@ public final class MJVariableNodeFactory {
                 this.state_ = state = state | 0b10 /* add-active execute(VirtualFrame, char) */;
                 return execute(frameValue, valueValue_);
             }
-            if (valueValue instanceof Long) {
-                long valueValue_ = (long) valueValue;
-                this.state_ = state = state | 0b100 /* add-active execute(VirtualFrame, long) */;
+            if (valueValue instanceof Double) {
+                double valueValue_ = (double) valueValue;
+                this.state_ = state = state | 0b100 /* add-active execute(VirtualFrame, double) */;
                 return execute(frameValue, valueValue_);
             }
             this.state_ = state = state | 0b1000 /* add-active execute(VirtualFrame, Object) */;

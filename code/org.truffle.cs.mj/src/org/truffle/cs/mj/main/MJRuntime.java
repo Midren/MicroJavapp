@@ -49,13 +49,13 @@ public class MJRuntime {
 
     static String whileLoopRD = "program P {"//
                     + " void foo(int i,int j) {print(i+j);return;}" //
-                    + "             void main () int p;{ "//
-                    + "                 p = 0;\n"//
-                    + "                 while(p < 10) {"//
+                    + "             void main () char p;{ "//
+                    + "                 p = 'a';\n"//
+// + " while(p < 10) {"//
                     + "                     print(p);\n"//
-                    + "                     p = p + 1;\n"//
+// + " p = p + 1;\n"//
 // + " foo(p,2);\n" //
-                    + "                 }"//
+// + " }"//
                     + "             }"//
                     + "}";
     static String ifProgram = "program P {"//

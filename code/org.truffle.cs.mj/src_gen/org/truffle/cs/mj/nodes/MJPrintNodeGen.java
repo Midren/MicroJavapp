@@ -22,7 +22,7 @@ public final class MJPrintNodeGen extends MJPrintNode {
     @Override
     public Object execute(VirtualFrame frameValue) {
         int state = state_;
-        if ((state & 0b10) == 0 /* only-active printI(int) */ && state != 0  /* is-not printI(int) && printO(Object) */) {
+        if ((state & 0b110) == 0 /* only-active printI(int) */ && state != 0  /* is-not printI(int) && printI(char) && printO(Object) */) {
             return execute_int0(frameValue, state);
         } else {
             return execute_generic1(frameValue, state);
@@ -41,7 +41,11 @@ public final class MJPrintNodeGen extends MJPrintNode {
             int expressionValue__ = (int) expressionValue_;
             return printI(expressionValue__);
         }
-        if ((state & 0b10) != 0 /* is-active printO(Object) */) {
+        if ((state & 0b10) != 0 /* is-active printI(char) */ && expressionValue_ instanceof Character) {
+            char expressionValue__ = (char) expressionValue_;
+            return printI(expressionValue__);
+        }
+        if ((state & 0b100) != 0 /* is-active printO(Object) */) {
             return printO(expressionValue_);
         }
         CompilerDirectives.transferToInterpreterAndInvalidate();
@@ -55,7 +59,12 @@ public final class MJPrintNodeGen extends MJPrintNode {
             this.state_ = state = state | 0b1 /* add-active printI(int) */;
             return printI(expressionValue_);
         }
-        this.state_ = state = state | 0b10 /* add-active printO(Object) */;
+        if (expressionValue instanceof Character) {
+            char expressionValue_ = (char) expressionValue;
+            this.state_ = state = state | 0b10 /* add-active printI(char) */;
+            return printI(expressionValue_);
+        }
+        this.state_ = state = state | 0b100 /* add-active printO(Object) */;
         return printO(expressionValue);
     }
 
