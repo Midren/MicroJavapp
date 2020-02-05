@@ -320,9 +320,11 @@ public final class RecursiveDescentParser {
     private void VarDecl() {
         Type();
         check(ident);
+        createLocalVar(t.str, null);
         while (sym == comma) {
             scan();
             check(ident);
+            createLocalVar(t.str, null);
         }
         check(semicolon);
     }
@@ -347,11 +349,20 @@ public final class RecursiveDescentParser {
 
     public Map<String, FrameSlot> slots = new HashMap<>();
 
-    public MJStatementNode createLocalVarWrite(String name, MJExpressionNode value) {
+    public void createLocalVar(String name, MJExpressionNode value) {
+        if (slots.containsKey(name)) {
+            throw new Error("Double declaration");
+        }
+        FrameSlot frameSlot = currentFrameDescriptor.addFrameSlot(name);
+        slots.put(name, frameSlot);
+    }
+
+    public MJStatementNode writeLocalVar(String name, MJExpressionNode value) {
         FrameSlot frameSlot = slots.get(name);
         if (frameSlot == null) {
-            frameSlot = currentFrameDescriptor.addFrameSlot(name);
-            slots.put(name, frameSlot);
+            throw new Error("Variable was used, but not declared");
+// frameSlot = currentFrameDescriptor.addFrameSlot(name);
+// slots.put(name, frameSlot);
         }
         return MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(value, frameSlot);
     }
@@ -471,7 +482,7 @@ public final class RecursiveDescentParser {
                 switch (sym) {
                     case assign:
                         Assignop();
-                        curStatementNode = createLocalVarWrite(des, Expr());
+                        curStatementNode = writeLocalVar(des, Expr());
                         break;
                     case plusas:
                     case minusas:
