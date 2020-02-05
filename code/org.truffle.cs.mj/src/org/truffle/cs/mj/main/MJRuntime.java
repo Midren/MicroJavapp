@@ -47,14 +47,14 @@ public class MJRuntime {
                     + "         }\n"//
                     + "}";
 
-    static String whileLoopRD = "program P {"//
+    static String whileLoopRD = "program P final int k = 3; {"//
                     + " void foo(int i,int j) {print(i+j);return;}" //
                     + "             void main () int p;{ "//
                     + "                 p = 0;\n"//
                     + "                 while(p < 10) {"//
-                    + "                     print(p);\n"//
+                    + "                     print(k);\n"//
                     + "                     p = p + 1;\n"//
-                    + "                     foo(p,2);\n" //
+// + " foo(p,2);\n" //
                     + "                 }"//
                     + "             }"//
                     + "}";
@@ -89,8 +89,8 @@ public class MJRuntime {
                     + "                 while(tmpA != 0) {"//
                     + "                     neg = neg + tmp;"//
                     + "                     tmpA = tmpA + tmp;"//
-                    // + " print(tmpA);"//
-                    // + " print(neg);"//
+                    + "                     print(tmpA);"//
+                    + "                     print(neg);"//
                     + "                 }"//
                     + "                 return neg;"//
                     + "             }"//

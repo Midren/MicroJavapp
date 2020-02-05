@@ -67,6 +67,7 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
+import com.sun.xml.internal.bind.CycleRecoverable.Context;
 
 public final class RecursiveDescentParser {
     /** Maximum number of global variables per program */
@@ -265,7 +266,7 @@ public final class RecursiveDescentParser {
         if (sym == expected) {
             scan();
         } else {
-            throw new Error("Token " + expected + " excpeted");
+            throw new Error("Token " + expected + " expected");
         }
     }
 
@@ -305,14 +306,17 @@ public final class RecursiveDescentParser {
         check(final_);
         Type();
         check(ident);
+        String name = t.str;
         check(assign);
-        if (sym == number) {
-            scan();
-        } else if (sym == charConst) {
-            scan();
-        } else {
-            throw new Error("Constant declaration");
-        }
+// if (sym == number) {
+// scan();
+// createConstLocalVarWrite(name, t.val);
+        createConstLocalVarWrite(name, Expr());
+// } else if (sym == charConst) {
+// scan();
+// } else {
+// throw new Error("Constant declaration");
+// }
         check(semicolon);
     }
 
@@ -345,9 +349,11 @@ public final class RecursiveDescentParser {
      * ( Type | "void" ) ident "(" [ FormPars ] ")" <br>
      * ( ";" | { VarDecl } Block ) .
      */
+    FrameDescriptor globalFrameDescriptor = new FrameDescriptor();
     FrameDescriptor currentFrameDescriptor;
 
     public Map<String, FrameSlot> slots = new HashMap<>();
+    public Map<String, FrameSlot> constantSlots = new HashMap<>();
 
     public void createLocalVar(String name, MJExpressionNode value) {
         if (slots.containsKey(name)) {
@@ -357,12 +363,19 @@ public final class RecursiveDescentParser {
         slots.put(name, frameSlot);
     }
 
+    public MJStatementNode createConstLocalVarWrite(String name, MJExpressionNode value) {
+        if (slots.containsKey(name)) {
+            throw new Error("Double declaration");
+        }
+        FrameSlot frameSlot = globalFrameDescriptor.addFrameSlot(name);
+        constantSlots.put(name, frameSlot);
+        return MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(value, frameSlot);
+    }
+
     public MJStatementNode writeLocalVar(String name, MJExpressionNode value) {
         FrameSlot frameSlot = slots.get(name);
         if (frameSlot == null) {
-            throw new Error("Variable was used, but not declared");
-// frameSlot = currentFrameDescriptor.addFrameSlot(name);
-// slots.put(name, frameSlot);
+            frameSlot = constantSlots.get(name);
         }
         return MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(value, frameSlot);
     }
@@ -392,7 +405,8 @@ public final class RecursiveDescentParser {
     MJFunction currentFun = null;
 
     private MJFunction MethodDecl() {
-        currentFrameDescriptor = new FrameDescriptor();
+// currentFrameDescriptor = new FrameDescriptor();
+        currentFrameDescriptor = globalFrameDescriptor.copy();
         if (sym == ident) {
             Type();
         } else if (sym == void_) {
@@ -428,6 +442,7 @@ public final class RecursiveDescentParser {
             check(ident);
             parNames.add(t.str);
         }
+        char a = 5, b = 2;
         return parNames;
     }
 
@@ -734,7 +749,13 @@ public final class RecursiveDescentParser {
                         expressionNode = new MJReadParameterNode(index);
                     } else {
                         // TODO: add checking
-                        expressionNode = MJVariableNodeFactory.MJReadLocalVariableNodeGen.create(slots.get(varname));
+                        FrameSlot frameSlot = slots.get(varname);
+                        if (frameSlot == null) {
+                            frameSlot = constantSlots.get(varname);
+                            if (frameSlot == null)
+                                throw new Error("Variable was not declared");
+                        }
+                        expressionNode = MJVariableNodeFactory.MJReadLocalVariableNodeGen.create(frameSlot);
                     }
 
                 }

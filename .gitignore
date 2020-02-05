@@ -1,3 +1,4 @@
 graal_dumps/
 .idea/
 dists/
+*/bin/*
