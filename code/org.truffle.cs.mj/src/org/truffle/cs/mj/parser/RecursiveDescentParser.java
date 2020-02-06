@@ -324,11 +324,11 @@ public final class RecursiveDescentParser {
     private void VarDecl() {
         Type();
         check(ident);
-        createLocalVar(t.str, null);
+        createLocalVar(t.str);
         while (sym == comma) {
             scan();
             check(ident);
-            createLocalVar(t.str, null);
+            createLocalVar(t.str);
         }
         check(semicolon);
     }
@@ -355,7 +355,7 @@ public final class RecursiveDescentParser {
     public Map<String, FrameSlot> slots = new HashMap<>();
     public Map<String, FrameSlot> constantSlots = new HashMap<>();
 
-    public void createLocalVar(String name, MJExpressionNode value) {
+    public void createLocalVar(String name) {
         if (slots.containsKey(name)) {
             throw new Error("Double declaration");
         }
