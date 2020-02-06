@@ -3,20 +3,21 @@ package org.truffle.cs.mj.nodes;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.dsl.TypeSystem;
 
 @NodeChild(value = "expression", type = MJExpressionNode.class)
 public abstract class MJPrintNode extends MJStatementNode {
     @Child MJExpressionNode param;
 
     @Specialization
-    Object printI(int i) {
-        print(i);
+    Object printI(char c) {
+        print(c);
         return null;
     }
 
     @Specialization
-    Object printI(char c) {
-        print(c);
+    Object printI(int i) {
+        print(i);
         return null;
     }
 

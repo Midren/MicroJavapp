@@ -32,15 +32,15 @@ public class MJVariableNode {
         protected abstract FrameSlot getSlot();
 
         @Specialization
-        public Object execute(VirtualFrame frame, int value) {
-            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Int);
+        public Object execute(VirtualFrame frame, char value) {
+            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Byte);
             frame.setObject(getSlot(), value);
             return null;
         }
 
         @Specialization
-        public Object execute(VirtualFrame frame, char value) {
-            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Byte);
+        public Object execute(VirtualFrame frame, int value) {
+            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Int);
             frame.setObject(getSlot(), value);
             return null;
         }

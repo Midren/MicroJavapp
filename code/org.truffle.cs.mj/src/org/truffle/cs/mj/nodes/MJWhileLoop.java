@@ -1,6 +1,7 @@
 package org.truffle.cs.mj.nodes;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.UnexpectedResultException;
 import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 public class MJWhileLoop extends MJStatementNode {
@@ -14,8 +15,12 @@ public class MJWhileLoop extends MJStatementNode {
 
     @Override
     public Object execute(VirtualFrame frame) {
-        while (condition.executeBool(frame)) {
-            loopBody.execute(frame);
+        try {
+            while (condition.executeBool(frame)) {
+                loopBody.execute(frame);
+            }
+        } catch (UnexpectedResultException e) {
+            throw new Error("Condition should be bool");
         }
         return null;
     }
