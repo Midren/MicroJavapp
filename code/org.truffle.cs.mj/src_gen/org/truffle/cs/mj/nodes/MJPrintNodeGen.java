@@ -6,6 +6,7 @@ import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.dsl.GeneratedBy;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.NodeCost;
+import com.oracle.truffle.api.nodes.UnexpectedResultException;
 import org.truffle.cs.mj.nodes.MJExpressionNode;
 import org.truffle.cs.mj.nodes.MJPrintNode;
 
@@ -22,26 +23,48 @@ public final class MJPrintNodeGen extends MJPrintNode {
     @Override
     public Object execute(VirtualFrame frameValue) {
         int state = state_;
-        if ((state & 0b10) == 0 /* only-active printI(int) */ && state != 0  /* is-not printI(int) && printO(Object) */) {
-            return execute_int0(frameValue, state);
+        if ((state & 0b110) == 0 /* only-active printI(char) */ && state != 0  /* is-not printI(char) && printI(int) && printO(Object) */) {
+            return execute_char0(frameValue, state);
+        } else if ((state & 0b101) == 0 /* only-active printI(int) */ && state != 0  /* is-not printI(char) && printI(int) && printO(Object) */) {
+            return execute_int1(frameValue, state);
         } else {
-            return execute_generic1(frameValue, state);
+            return execute_generic2(frameValue, state);
         }
     }
 
-    private Object execute_int0(VirtualFrame frameValue, int state) {
-        int expressionValue_ = this.expression_.executeI32(frameValue);
-        assert (state & 0b1) != 0 /* is-active printI(int) */;
+    private Object execute_char0(VirtualFrame frameValue, int state) {
+        char expressionValue_;
+        try {
+            expressionValue_ = this.expression_.executeChar(frameValue);
+        } catch (UnexpectedResultException ex) {
+            return executeAndSpecialize(ex.getResult());
+        }
+        assert (state & 0b1) != 0 /* is-active printI(char) */;
         return printI(expressionValue_);
     }
 
-    private Object execute_generic1(VirtualFrame frameValue, int state) {
+    private Object execute_int1(VirtualFrame frameValue, int state) {
+        int expressionValue_;
+        try {
+            expressionValue_ = this.expression_.executeI32(frameValue);
+        } catch (UnexpectedResultException ex) {
+            return executeAndSpecialize(ex.getResult());
+        }
+        assert (state & 0b10) != 0 /* is-active printI(int) */;
+        return printI(expressionValue_);
+    }
+
+    private Object execute_generic2(VirtualFrame frameValue, int state) {
         Object expressionValue_ = this.expression_.executeGeneric(frameValue);
-        if ((state & 0b1) != 0 /* is-active printI(int) */ && expressionValue_ instanceof Integer) {
+        if ((state & 0b1) != 0 /* is-active printI(char) */ && expressionValue_ instanceof Character) {
+            char expressionValue__ = (char) expressionValue_;
+            return printI(expressionValue__);
+        }
+        if ((state & 0b10) != 0 /* is-active printI(int) */ && expressionValue_ instanceof Integer) {
             int expressionValue__ = (int) expressionValue_;
             return printI(expressionValue__);
         }
-        if ((state & 0b10) != 0 /* is-active printO(Object) */) {
+        if ((state & 0b100) != 0 /* is-active printO(Object) */) {
             return printO(expressionValue_);
         }
         CompilerDirectives.transferToInterpreterAndInvalidate();
@@ -50,12 +73,17 @@ public final class MJPrintNodeGen extends MJPrintNode {
 
     private Object executeAndSpecialize(Object expressionValue) {
         int state = state_;
-        if (expressionValue instanceof Integer) {
-            int expressionValue_ = (int) expressionValue;
-            this.state_ = state = state | 0b1 /* add-active printI(int) */;
+        if (expressionValue instanceof Character) {
+            char expressionValue_ = (char) expressionValue;
+            this.state_ = state = state | 0b1 /* add-active printI(char) */;
             return printI(expressionValue_);
         }
-        this.state_ = state = state | 0b10 /* add-active printO(Object) */;
+        if (expressionValue instanceof Integer) {
+            int expressionValue_ = (int) expressionValue;
+            this.state_ = state = state | 0b10 /* add-active printI(int) */;
+            return printI(expressionValue_);
+        }
+        this.state_ = state = state | 0b100 /* add-active printO(Object) */;
         return printO(expressionValue);
     }
 

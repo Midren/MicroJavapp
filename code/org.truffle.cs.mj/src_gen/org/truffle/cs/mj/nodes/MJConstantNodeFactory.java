@@ -1,11 +1,11 @@
 // CheckStyle: start generated
 package org.truffle.cs.mj.nodes;
 
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.GeneratedBy;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.NodeCost;
 import org.truffle.cs.mj.nodes.MJConstantNode;
+import org.truffle.cs.mj.nodes.MJConstantNode.BoolNode;
 import org.truffle.cs.mj.nodes.MJConstantNode.CharNode;
 import org.truffle.cs.mj.nodes.MJConstantNode.DoubleNode;
 import org.truffle.cs.mj.nodes.MJConstantNode.IntNode;
@@ -13,6 +13,33 @@ import org.truffle.cs.mj.nodes.MJConstantNode.IntNode;
 @GeneratedBy(MJConstantNode.class)
 public final class MJConstantNodeFactory {
 
+    @GeneratedBy(CharNode.class)
+    public static final class CharNodeGen extends CharNode {
+
+        private CharNodeGen(char constant) {
+            super(constant);
+        }
+
+        @Override
+        public Object executeGeneric(VirtualFrame frameValue) {
+            return doChar();
+        }
+
+        @Override
+        public char executeChar(VirtualFrame frameValue) {
+            return doChar();
+        }
+
+        @Override
+        public NodeCost getCost() {
+            return NodeCost.MONOMORPHIC;
+        }
+
+        public static CharNode create(char constant) {
+            return new CharNodeGen(constant);
+        }
+
+    }
     @GeneratedBy(IntNode.class)
     public static final class IntNodeGen extends IntNode {
 
@@ -31,9 +58,30 @@ public final class MJConstantNodeFactory {
         }
 
         @Override
+        public NodeCost getCost() {
+            return NodeCost.MONOMORPHIC;
+        }
+
+        public static IntNode create(int constant) {
+            return new IntNodeGen(constant);
+        }
+
+    }
+    @GeneratedBy(BoolNode.class)
+    public static final class BoolNodeGen extends BoolNode {
+
+        private BoolNodeGen(boolean constant) {
+            super(constant);
+        }
+
+        @Override
+        public Object executeGeneric(VirtualFrame frameValue) {
+            return doBool();
+        }
+
+        @Override
         public boolean executeBool(VirtualFrame frameValue) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw new AssertionError("Delegation failed.");
+            return doBool();
         }
 
         @Override
@@ -41,8 +89,8 @@ public final class MJConstantNodeFactory {
             return NodeCost.MONOMORPHIC;
         }
 
-        public static IntNode create(int constant) {
-            return new IntNodeGen(constant);
+        public static BoolNode create(boolean constant) {
+            return new BoolNodeGen(constant);
         }
 
     }
@@ -59,15 +107,8 @@ public final class MJConstantNodeFactory {
         }
 
         @Override
-        public boolean executeBool(VirtualFrame frameValue) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw new AssertionError("Delegation failed.");
-        }
-
-        @Override
-        public int executeI32(VirtualFrame frameValue) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw new AssertionError("Delegation failed.");
+        public double executeDouble(VirtualFrame frameValue) {
+            return doDouble();
         }
 
         @Override
@@ -77,40 +118,6 @@ public final class MJConstantNodeFactory {
 
         public static DoubleNode create(double constant) {
             return new DoubleNodeGen(constant);
-        }
-
-    }
-    @GeneratedBy(CharNode.class)
-    public static final class CharNodeGen extends CharNode {
-
-        private CharNodeGen(char constant) {
-            super(constant);
-        }
-
-        @Override
-        public Object executeGeneric(VirtualFrame frameValue) {
-            return doChar();
-        }
-
-        @Override
-        public boolean executeBool(VirtualFrame frameValue) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw new AssertionError("Delegation failed.");
-        }
-
-        @Override
-        public int executeI32(VirtualFrame frameValue) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw new AssertionError("Delegation failed.");
-        }
-
-        @Override
-        public NodeCost getCost() {
-            return NodeCost.MONOMORPHIC;
-        }
-
-        public static CharNode create(char constant) {
-            return new CharNodeGen(constant);
         }
 
     }

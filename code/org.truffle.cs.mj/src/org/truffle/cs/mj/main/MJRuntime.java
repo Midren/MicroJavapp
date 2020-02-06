@@ -11,6 +11,7 @@ import org.truffle.cs.mj.parser.RecursiveDescentParser;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
+import com.oracle.truffle.api.TruffleLanguage.ContextReference;
 import com.oracle.truffle.api.TruffleRuntime;
 
 public class MJRuntime {

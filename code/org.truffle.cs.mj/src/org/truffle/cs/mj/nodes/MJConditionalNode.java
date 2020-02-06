@@ -1,6 +1,7 @@
 package org.truffle.cs.mj.nodes;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.UnexpectedResultException;
 
 public class MJConditionalNode extends MJStatementNode {
     @Child MJExpressionNode condition;
@@ -16,12 +17,16 @@ public class MJConditionalNode extends MJStatementNode {
 
     @Override
     public Object execute(VirtualFrame frame) {
-        if (condition.executeBool(frame)) {
-            trueCase.execute(frame);
-        } else {
-            if (falseCase != null) {
-                falseCase.execute(frame);
+        try {
+            if (condition.executeBool(frame)) {
+                trueCase.execute(frame);
+            } else {
+                if (falseCase != null) {
+                    falseCase.execute(frame);
+                }
             }
+        } catch (UnexpectedResultException e) {
+            throw new Error("Condition should be bool");
         }
         return null;
     }

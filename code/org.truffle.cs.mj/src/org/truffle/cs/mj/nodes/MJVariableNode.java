@@ -5,6 +5,7 @@ import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.FrameSlot;
+import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.FrameSlotTypeException;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
@@ -31,8 +32,28 @@ public class MJVariableNode {
         protected abstract FrameSlot getSlot();
 
         @Specialization
+        public Object execute(VirtualFrame frame, char value) {
+            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Byte);
+            frame.setObject(getSlot(), value);
+            return null;
+        }
+
+        @Specialization
+        public Object execute(VirtualFrame frame, int value) {
+            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Int);
+            frame.setObject(getSlot(), value);
+            return null;
+        }
+
+        @Specialization
+        public Object execute(VirtualFrame frame, double value) {
+            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Double);
+            frame.setObject(getSlot(), value);
+            return null;
+        }
+
+        @Specialization
         public Object execute(VirtualFrame frame, Object value) {
-            // TODO: Optimize for different types
             frame.setObject(getSlot(), value);
             return null;
         }
