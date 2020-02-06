@@ -49,6 +49,7 @@ import org.truffle.cs.mj.nodes.MJBreakNode;
 import org.truffle.cs.mj.nodes.MJConditionalNode;
 import org.truffle.cs.mj.nodes.MJConstantNode;
 import org.truffle.cs.mj.nodes.MJConstantNodeFactory;
+import org.truffle.cs.mj.nodes.MJContinueNode;
 import org.truffle.cs.mj.nodes.MJExpressionNode;
 import org.truffle.cs.mj.nodes.MJExpressionStatement;
 import org.truffle.cs.mj.nodes.MJFunction;
@@ -563,6 +564,7 @@ public final class RecursiveDescentParser {
             case continue_:
                 scan();
                 check(semicolon);
+                curStatementNode = new MJContinueNode();
                 break;
             // ----- "return" [ Expr ] ";"
             case return_:
