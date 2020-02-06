@@ -82,11 +82,11 @@ public final class MJVariableNodeFactory {
         @Override
         public Object execute(VirtualFrame frameValue) {
             int state = state_;
-            if ((state & 0b110) == 0 /* only-active execute(VirtualFrame, char) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) */) {
+            if ((state & 0b1110) == 0 /* only-active execute(VirtualFrame, char) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
                 return execute_char0(frameValue, state);
-            } else if ((state & 0b101) == 0 /* only-active execute(VirtualFrame, int) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) */) {
+            } else if ((state & 0b1101) == 0 /* only-active execute(VirtualFrame, int) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
                 return execute_int1(frameValue, state);
-            } else if ((state & 0b11) == 0 /* only-active execute(VirtualFrame, double) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) */) {
+            } else if ((state & 0b1011) == 0 /* only-active execute(VirtualFrame, double) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
                 return execute_double2(frameValue, state);
             } else {
                 return execute_generic3(frameValue, state);
@@ -125,6 +125,7 @@ public final class MJVariableNodeFactory {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
             assert (state & 0b100) != 0 /* is-active execute(VirtualFrame, double) */;
+            assert (isDoubleVariable());
             return execute(frameValue, valueValue_);
         }
 
@@ -142,7 +143,12 @@ public final class MJVariableNodeFactory {
             }
             if ((state & 0b100) != 0 /* is-active execute(VirtualFrame, double) */ && valueValue_ instanceof Double) {
                 double valueValue__ = (double) valueValue_;
+                assert (isDoubleVariable());
                 return execute(frameValue, valueValue__);
+            }
+            if ((state & 0b1000) != 0 /* is-active execute(VirtualFrame, Object) */) {
+                assert (isNotPrimitive());
+                return execute(frameValue, valueValue_);
             }
             CompilerDirectives.transferToInterpreterAndInvalidate();
             return executeAndSpecialize(frameValue, valueValue_);
@@ -166,8 +172,14 @@ public final class MJVariableNodeFactory {
             }
             if (valueValue instanceof Double) {
                 double valueValue_ = (double) valueValue;
-                this.state_ = state = state | 0b100 /* add-active execute(VirtualFrame, double) */;
-                return execute(frameValue, valueValue_);
+                if ((isDoubleVariable())) {
+                    this.state_ = state = state | 0b100 /* add-active execute(VirtualFrame, double) */;
+                    return execute(frameValue, valueValue_);
+                }
+            }
+            if ((isNotPrimitive())) {
+                this.state_ = state = state | 0b1000 /* add-active execute(VirtualFrame, Object) */;
+                return execute(frameValue, valueValue);
             }
             throw new UnsupportedSpecializationException(this, new Node[] {this.value_}, valueValue);
         }

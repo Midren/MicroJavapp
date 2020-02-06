@@ -50,7 +50,7 @@ public class MJRuntime {
 
     static String whileLoopRD = "program P {"//
                     + " void foo(int i,int j) {print(i+j);return;}" //
-                    + "             void main () int p;{ "//
+                    + "             void main () char p;{ "//
                     + "                 p = 0;\n"//
                     + "                 while(p < 10) {"//
                     + "                     if(p==5){" + "                         p=p+1;"//

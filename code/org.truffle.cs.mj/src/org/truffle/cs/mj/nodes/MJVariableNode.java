@@ -2,6 +2,7 @@ package org.truffle.cs.mj.nodes;
 
 import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.CharDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.primitives.DoubleDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.IntDescriptor;
 
 import com.oracle.truffle.api.CompilerDirectives;
@@ -56,18 +57,18 @@ public class MJVariableNode {
             return null;
         }
 
-        @Specialization
+        @Specialization(guards = "isDoubleVariable()")
         public Object execute(VirtualFrame frame, double value) {
             frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Double);
             frame.setObject(getSlot(), value);
             return null;
         }
 
-// @Specialization
-// public Object execute(VirtualFrame frame, Object value) {
-// frame.setObject(getSlot(), value);
-// return null;
-// }
+        @Specialization(guards = "isNotPrimitive()")
+        public Object execute(VirtualFrame frame, Object value) {
+            frame.setObject(getSlot(), value);
+            return null;
+        }
 
         protected final boolean isCharVariable() {
             return getType() == CharDescriptor.getInstance();
@@ -75,6 +76,15 @@ public class MJVariableNode {
 
         protected final boolean isIntVariable() {
             return getType() == IntDescriptor.getInstance();
+        }
+
+        protected final boolean isDoubleVariable() {
+            return getType() == DoubleDescriptor.getInstance();
+        }
+
+        protected final boolean isNotPrimitive() {
+            TypeDescriptor type = getType();
+            return type != CharDescriptor.getInstance() && type != IntDescriptor.getInstance() && type != DoubleDescriptor.getInstance();
         }
     }
 }
