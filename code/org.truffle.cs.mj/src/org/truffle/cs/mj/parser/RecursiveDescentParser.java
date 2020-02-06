@@ -61,6 +61,7 @@ import org.truffle.cs.mj.nodes.MJStatementNode;
 import org.truffle.cs.mj.nodes.MJBinaryNode.AddNode;
 import org.truffle.cs.mj.nodes.MJVariableNode.MJReadLocalVariableNode;
 import org.truffle.cs.mj.nodes.MJVariableNode.MJWriteLocalVariableNode;
+import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.IntDescriptor;
 import org.truffle.cs.mj.nodes.MJVariableNodeFactory;
 import org.truffle.cs.mj.nodes.MJWhileLoop;
@@ -325,13 +326,13 @@ public final class RecursiveDescentParser {
 
     /** VarDecl = Type ident { "," ident } ";" . */
     private void VarDecl() {
-        Type();
+        String typeName = Type();
         check(ident);
-        createLocalVar(t.str);
+        createLocalVar(t.str, typeName);
         while (sym == comma) {
             scan();
             check(ident);
-            createLocalVar(t.str);
+            createLocalVar(t.str, typeName);
         }
         check(semicolon);
     }
@@ -359,8 +360,11 @@ public final class RecursiveDescentParser {
     public Map<String, FrameSlot> slots = new HashMap<>();
     public Map<String, FrameSlot> constantSlots = new HashMap<>();
 
-    public void createLocalVar(String varname) {
-        currentLexicalScope.addVariable(varname, IntDescriptor.getInstance());
+    public void createLocalVar(String varname, String typeName) {
+        TypeDescriptor typeDescriptor = currentLexicalScope.getTypeDescriptor(typeName);
+        if (typeDescriptor == null)
+            throw new Error("Type " + typeName + " was not defined");
+        currentLexicalScope.addVariable(varname, typeDescriptor);
     }
 
     public MJExpressionNode readLocalVar(String varname) {
@@ -368,21 +372,21 @@ public final class RecursiveDescentParser {
         if (frameSlot == null) {
             throw new Error("Variable was not declared");
         }
-        return MJVariableNodeFactory.MJReadLocalVariableNodeGen.create(frameSlot);
+        return MJVariableNodeFactory.MJReadLocalVariableNodeGen.create(frameSlot, currentLexicalScope.getVisibleIdentifierDescriptor(varname));
     }
 
-    public MJStatementNode createConstLocalVarWrite(String name, MJExpressionNode value) {
-        if (slots.containsKey(name)) {
+    public MJStatementNode createConstLocalVarWrite(String varname, MJExpressionNode value) {
+        if (slots.containsKey(varname)) {
             throw new Error("Double declaration");
         }
-        FrameSlot frameSlot = globalFrameDescriptor.addFrameSlot(name);
-        constantSlots.put(name, frameSlot);
-        return MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(value, frameSlot);
+        FrameSlot frameSlot = globalFrameDescriptor.addFrameSlot(varname);
+        constantSlots.put(varname, frameSlot);
+        return MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(value, frameSlot, currentLexicalScope.getVisibleIdentifierDescriptor(varname));
     }
 
     public MJStatementNode writeLocalVar(String varname, MJExpressionNode value) {
         FrameSlot frameSlot = currentLexicalScope.getVisibleFrameSlot(varname);
-        return MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(value, frameSlot);
+        return MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(value, frameSlot, currentLexicalScope.getVisibleIdentifierDescriptor(varname));
     }
 
     public List<MJFunction> functions = new ArrayList<>();
@@ -412,8 +416,9 @@ public final class RecursiveDescentParser {
     private MJFunction MethodDecl() {
 // currentFrameDescriptor = new FrameDescriptor();
 // currentFrameDescriptor = globalFrameDescriptor.copy();
+        String funcType = null;
         if (sym == ident) {
-            Type();
+            funcType = Type();
         } else if (sym == void_) {
             scan();
         } else {
@@ -430,7 +435,7 @@ public final class RecursiveDescentParser {
         while (sym == ident) {
             VarDecl();
         }
-        currentFun = new MJFunction(name, Block(), currentLexicalScope.getFrameDescriptor());
+        currentFun = new MJFunction(name, Block(), currentLexicalScope.getFrameDescriptor(), funcType == null ? null : currentLexicalScope.getTypeDescriptor(funcType));
         functions.add(currentFun);
         parameterNames = null;
         return currentFun;
@@ -452,12 +457,13 @@ public final class RecursiveDescentParser {
     }
 
     /** Type = ident . */
-    private void Type() {
+    private String Type() {
         check(ident);
-        if (sym == lbrack) {
-            scan();
-            check(rbrack);
-        }
+        return t.str;
+// if (sym == lbrack) {
+// scan();
+// check(rbrack);
+// }
     }
 
     /** Block = "{" { Statement } "}" . */
@@ -523,7 +529,7 @@ public final class RecursiveDescentParser {
                             callTarget = Truffle.getRuntime().createCallTarget(caleeFunction);
                             callAble.put(caleeFunction, callTarget);
                         }
-                        MJExpressionNode invoke = new MJInvokeNode(callTarget, params.toArray(new MJExpressionNode[params.size()]));
+                        MJExpressionNode invoke = new MJInvokeNode(callTarget, params.toArray(new MJExpressionNode[params.size()]), caleeFunction.returnType);
                         curStatementNode = new MJExpressionStatement(invoke);
                         break;
                     case pplus:
@@ -756,7 +762,8 @@ public final class RecursiveDescentParser {
 
                     int index = parameterNames != null ? parameterNames.indexOf(varname) : -1;
                     if (index >= 0) {
-                        expressionNode = new MJReadParameterNode(index);
+                        // TODO: Add normal type
+                        expressionNode = new MJReadParameterNode(index, IntDescriptor.getInstance());
                     } else {
                         // TODO: add checking
 // FrameSlot frameSlot = slots.get(varname);

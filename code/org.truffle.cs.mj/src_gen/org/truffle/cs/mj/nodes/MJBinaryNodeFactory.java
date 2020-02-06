@@ -43,6 +43,11 @@ public final class MJBinaryNodeFactory {
         }
 
         @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
+        }
+
+        @Override
         public Object executeGeneric(VirtualFrame frameValue) {
             int state = state_;
             if ((state & 0b10) == 0 /* only-active add(int, int) */ && (state & 0b11) != 0  /* is-not add(int, int) && add(double, double) */) {
@@ -246,6 +251,11 @@ public final class MJBinaryNodeFactory {
         private SubtractNodeGen(MJExpressionNode lhs, MJExpressionNode rhs) {
             this.lhs_ = lhs;
             this.rhs_ = rhs;
+        }
+
+        @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
         }
 
         @Override
@@ -455,6 +465,11 @@ public final class MJBinaryNodeFactory {
         }
 
         @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
+        }
+
+        @Override
         public Object executeGeneric(VirtualFrame frameValue) {
             int state = state_;
             if ((state & 0b10) == 0 /* only-active multiply(int, int) */ && (state & 0b11) != 0  /* is-not multiply(int, int) && multiply(double, double) */) {
@@ -658,6 +673,11 @@ public final class MJBinaryNodeFactory {
         private DividerNodeGen(MJExpressionNode lhs, MJExpressionNode rhs) {
             this.lhs_ = lhs;
             this.rhs_ = rhs;
+        }
+
+        @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
         }
 
         @Override
@@ -867,6 +887,11 @@ public final class MJBinaryNodeFactory {
         }
 
         @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
+        }
+
+        @Override
         public Object executeGeneric(VirtualFrame frameValue) {
             int state = state_;
             if ((state & 0b10) == 0 /* only-active modulation(int, int) */ && (state & 0b11) != 0  /* is-not modulation(int, int) && modulation(double, double) */) {
@@ -1070,6 +1095,11 @@ public final class MJBinaryNodeFactory {
         private EqualNodeGen(MJExpressionNode lhs, MJExpressionNode rhs) {
             this.lhs_ = lhs;
             this.rhs_ = rhs;
+        }
+
+        @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
         }
 
         @Override
@@ -1371,6 +1401,11 @@ public final class MJBinaryNodeFactory {
         }
 
         @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
+        }
+
+        @Override
         public Object executeGeneric(VirtualFrame frameValue) {
             int state = state_;
             if ((state & 0b1110) == 0 /* only-active notEqual(int, int) */ && (state & 0b1111) != 0  /* is-not notEqual(int, int) && equal(char, char) && notEqual(double, double) && notEqual(Object, Object) */) {
@@ -1669,6 +1704,11 @@ public final class MJBinaryNodeFactory {
         }
 
         @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
+        }
+
+        @Override
         public Object executeGeneric(VirtualFrame frameValue) {
             int state = state_;
             if ((state & 0b10) == 0 /* only-active less(int, int) */ && (state & 0b11) != 0  /* is-not less(int, int) && less(double, double) */) {
@@ -1895,6 +1935,11 @@ public final class MJBinaryNodeFactory {
         private LessEqualNodeGen(MJExpressionNode lhs, MJExpressionNode rhs) {
             this.lhs_ = lhs;
             this.rhs_ = rhs;
+        }
+
+        @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
         }
 
         @Override
@@ -2127,6 +2172,11 @@ public final class MJBinaryNodeFactory {
         }
 
         @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
+        }
+
+        @Override
         public Object executeGeneric(VirtualFrame frameValue) {
             int state = state_;
             if ((state & 0b10) == 0 /* only-active more(int, int) */ && (state & 0b11) != 0  /* is-not more(int, int) && more(double, double) */) {
@@ -2353,6 +2403,11 @@ public final class MJBinaryNodeFactory {
         private GreaterEqualNodeGen(MJExpressionNode lhs, MJExpressionNode rhs) {
             this.lhs_ = lhs;
             this.rhs_ = rhs;
+        }
+
+        @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
         }
 
         @Override
@@ -2585,6 +2640,11 @@ public final class MJBinaryNodeFactory {
         }
 
         @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
+        }
+
+        @Override
         public Object executeGeneric(VirtualFrame frameValue) {
             int state = state_;
             boolean lhsValue_;
@@ -2668,6 +2728,11 @@ public final class MJBinaryNodeFactory {
         private AndNodeGen(MJExpressionNode lhs, MJExpressionNode rhs) {
             this.lhs_ = lhs;
             this.rhs_ = rhs;
+        }
+
+        @Override
+        public MJExpressionNode getLhs() {
+            return this.lhs_;
         }
 
         @Override

@@ -1,6 +1,6 @@
 package org.truffle.cs.mj.nodes;
 
-import org.truffle.cs.mj.nodes.MJReturnNode.MJReturnException;
+import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
 
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -12,11 +12,13 @@ public class MJFunction extends RootNode {
 
     final String name;
     @Child MJStatementNode body;
+    public final TypeDescriptor returnType;
 
-    public MJFunction(String name, MJStatementNode body, FrameDescriptor frameDescriptor) {
+    public MJFunction(String name, MJStatementNode body, FrameDescriptor frameDescriptor, TypeDescriptor returnType) {
         super(null, frameDescriptor);
         this.body = body;
         this.name = name;
+        this.returnType = returnType;
     }
 
     @Override

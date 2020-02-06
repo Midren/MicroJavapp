@@ -57,4 +57,20 @@ public class LexicalScope {
     public TypeDescriptor getTypeDescriptor(String identifier) {
         return localIdentifiers.getTypeDescriptor(identifier);
     }
+
+    public TypeDescriptor getVisibleIdentifierDescriptor(String identifier) {
+        LexicalScope tmpLexicalScope = this;
+        TypeDescriptor typeDescriptor = null;
+        while (tmpLexicalScope != null) {
+            typeDescriptor = tmpLexicalScope.getIdentifierDescriptor(identifier);
+            if (typeDescriptor != null)
+                break;
+            tmpLexicalScope = tmpLexicalScope.getParentScope();
+        }
+        return typeDescriptor;
+    }
+
+    public TypeDescriptor getIdentifierDescriptor(String identifier) {
+        return localIdentifiers.getIdentifierDescriptor(identifier);
+    }
 }

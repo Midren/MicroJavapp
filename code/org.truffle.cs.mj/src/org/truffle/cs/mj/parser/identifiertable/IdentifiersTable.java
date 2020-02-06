@@ -55,6 +55,7 @@ public class IdentifiersTable {
         if (identifiersMap.containsKey(identifier)) {
             throw new Error("Double declaration");
         }
+        identifiersMap.put(identifier, typeDescriptor);
         return frameDescriptor.addFrameSlot(identifier, typeDescriptor.getSlotKind());
     }
 }
