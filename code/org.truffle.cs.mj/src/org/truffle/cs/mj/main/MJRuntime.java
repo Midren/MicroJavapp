@@ -52,7 +52,7 @@ public class MJRuntime {
                     + "             void main () int p;{ "//
                     + "                 p = 0;\n"//
                     + "                 while(p < 10) {"//
-                    + "                     print(p);\n"//
+                    + "                     break;\n"//
                     + "                     p = p + 1;\n"//
 // + " foo(p,2);\n" //
                     + "                 }"//

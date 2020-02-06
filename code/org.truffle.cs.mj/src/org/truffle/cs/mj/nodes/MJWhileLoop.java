@@ -15,7 +15,11 @@ public class MJWhileLoop extends MJStatementNode {
     @Override
     public Object execute(VirtualFrame frame) {
         while (condition.executeBool(frame)) {
-            loopBody.execute(frame);
+            try {
+                loopBody.execute(frame);
+            } catch (MJBreakNode.MJBreakException e) {
+                break;
+            }
         }
         return null;
     }

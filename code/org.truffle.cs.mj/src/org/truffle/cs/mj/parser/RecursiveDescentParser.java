@@ -45,6 +45,7 @@ import java.util.Map;
 
 import org.truffle.cs.mj.nodes.MJBinaryNode;
 import org.truffle.cs.mj.nodes.MJBlock;
+import org.truffle.cs.mj.nodes.MJBreakNode;
 import org.truffle.cs.mj.nodes.MJConditionalNode;
 import org.truffle.cs.mj.nodes.MJConstantNode;
 import org.truffle.cs.mj.nodes.MJConstantNodeFactory;
@@ -556,6 +557,7 @@ public final class RecursiveDescentParser {
             case break_:
                 scan();
                 check(semicolon);
+                curStatementNode = new MJBreakNode();
                 break;
 
             // ----- "break" ";"
@@ -763,7 +765,7 @@ public final class RecursiveDescentParser {
             case number:
                 scan();
                 expressionNode = MJConstantNodeFactory.IntNodeGen.create(t.val);
-//                expressionNode = MJConstantIntNodeGen.create(t.val);
+// expressionNode = MJConstantIntNodeGen.create(t.val);
                 break;
             case charConst:
                 scan();
