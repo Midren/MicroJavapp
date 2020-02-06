@@ -52,11 +52,9 @@ public class IdentifiersTable {
     }
 
     private FrameSlot addNewIdentifier(String identifier, TypeDescriptor typeDescriptor) {
-
         if (identifiersMap.containsKey(identifier)) {
             throw new Error("Double declaration");
         }
-        identifiersMap.put(identifier, typeDescriptor);
         return frameDescriptor.addFrameSlot(identifier, typeDescriptor.getSlotKind());
     }
 }

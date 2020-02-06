@@ -9,12 +9,13 @@ import com.oracle.truffle.api.frame.FrameSlot;
 public class LexicalScope {
     private String name;
     private final LexicalScope parent;
-    private int depth;
+    int depth;
     IdentifiersTable localIdentifiers;
 
     public LexicalScope(LexicalScope scope, String name) {
         this.name = name;
         this.parent = scope;
+        this.localIdentifiers = new IdentifiersTable();
         if (scope != null)
             this.depth = scope.depth + 1;
         else
@@ -39,6 +40,18 @@ public class LexicalScope {
 
     public FrameSlot getFrameSlot(String identifier) {
         return localIdentifiers.getFrameSlot(identifier);
+    }
+
+    public FrameSlot getVisibleFrameSlot(String identifier) {
+        LexicalScope tmpLexicalScope = this;
+        FrameSlot frameSlot = null;
+        while (tmpLexicalScope != null) {
+            frameSlot = tmpLexicalScope.getFrameSlot(identifier);
+            if (frameSlot != null)
+                break;
+            tmpLexicalScope = tmpLexicalScope.getParentScope();
+        }
+        return frameSlot;
     }
 
     public TypeDescriptor getTypeDescriptor(String identifier) {

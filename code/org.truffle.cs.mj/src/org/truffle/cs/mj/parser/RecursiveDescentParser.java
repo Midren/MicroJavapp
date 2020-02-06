@@ -61,6 +61,7 @@ import org.truffle.cs.mj.nodes.MJStatementNode;
 import org.truffle.cs.mj.nodes.MJBinaryNode.AddNode;
 import org.truffle.cs.mj.nodes.MJVariableNode.MJReadLocalVariableNode;
 import org.truffle.cs.mj.nodes.MJVariableNode.MJWriteLocalVariableNode;
+import org.truffle.cs.mj.parser.identifiertable.types.primitives.IntDescriptor;
 import org.truffle.cs.mj.nodes.MJVariableNodeFactory;
 import org.truffle.cs.mj.nodes.MJWhileLoop;
 import org.truffle.cs.mj.nodes.MJBinaryNodeFactory;
@@ -352,17 +353,22 @@ public final class RecursiveDescentParser {
      * ( ";" | { VarDecl } Block ) .
      */
     FrameDescriptor globalFrameDescriptor = new FrameDescriptor();
+    LexicalScope currentLexicalScope;
     FrameDescriptor currentFrameDescriptor;
 
     public Map<String, FrameSlot> slots = new HashMap<>();
     public Map<String, FrameSlot> constantSlots = new HashMap<>();
 
-    public void createLocalVar(String name) {
-        if (slots.containsKey(name)) {
-            throw new Error("Double declaration");
+    public void createLocalVar(String varname) {
+        currentLexicalScope.addVariable(varname, IntDescriptor.getInstance());
+    }
+
+    public MJExpressionNode readLocalVar(String varname) {
+        FrameSlot frameSlot = currentLexicalScope.getVisibleFrameSlot(varname);
+        if (frameSlot == null) {
+            throw new Error("Variable was not declared");
         }
-        FrameSlot frameSlot = currentFrameDescriptor.addFrameSlot(name);
-        slots.put(name, frameSlot);
+        return MJVariableNodeFactory.MJReadLocalVariableNodeGen.create(frameSlot);
     }
 
     public MJStatementNode createConstLocalVarWrite(String name, MJExpressionNode value) {
@@ -374,11 +380,8 @@ public final class RecursiveDescentParser {
         return MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(value, frameSlot);
     }
 
-    public MJStatementNode writeLocalVar(String name, MJExpressionNode value) {
-        FrameSlot frameSlot = slots.get(name);
-        if (frameSlot == null) {
-            frameSlot = constantSlots.get(name);
-        }
+    public MJStatementNode writeLocalVar(String varname, MJExpressionNode value) {
+        FrameSlot frameSlot = currentLexicalScope.getVisibleFrameSlot(varname);
         return MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(value, frameSlot);
     }
 
@@ -407,7 +410,7 @@ public final class RecursiveDescentParser {
     MJFunction currentFun = null;
 
     private MJFunction MethodDecl() {
-        currentFrameDescriptor = new FrameDescriptor();
+// currentFrameDescriptor = new FrameDescriptor();
 // currentFrameDescriptor = globalFrameDescriptor.copy();
         if (sym == ident) {
             Type();
@@ -418,6 +421,7 @@ public final class RecursiveDescentParser {
         }
         check(ident);
         String name = t.str;
+        currentLexicalScope = new LexicalScope(null, name);
         check(lpar);
         if (sym == ident) {
             parameterNames = FormPars();
@@ -426,7 +430,7 @@ public final class RecursiveDescentParser {
         while (sym == ident) {
             VarDecl();
         }
-        currentFun = new MJFunction(name, Block(), currentFrameDescriptor);
+        currentFun = new MJFunction(name, Block(), currentLexicalScope.getFrameDescriptor());
         functions.add(currentFun);
         parameterNames = null;
         return currentFun;
@@ -434,7 +438,7 @@ public final class RecursiveDescentParser {
 
     /** FormPars = Type ident { "," Type ident } . */
     private ArrayList<String> FormPars() {
-        ArrayList<String> parNames = new ArrayList<String>();
+        ArrayList<String> parNames = new ArrayList<>();
         Type();
         check(ident);
         parNames.add(t.str);
@@ -459,7 +463,10 @@ public final class RecursiveDescentParser {
     /** Block = "{" { Statement } "}" . */
     private MJStatementNode Block() {
         check(lbrace);
+        LexicalScope innerBlockScope = new LexicalScope(currentLexicalScope, "inner_" + currentLexicalScope.depth);
+        currentLexicalScope = innerBlockScope;
         List<MJStatementNode> statements = Statements();
+        currentLexicalScope = currentLexicalScope.getParentScope();
         check(rbrace);
         return new MJBlock(statements.toArray(new MJStatementNode[statements.size()]));
     }
@@ -752,13 +759,14 @@ public final class RecursiveDescentParser {
                         expressionNode = new MJReadParameterNode(index);
                     } else {
                         // TODO: add checking
-                        FrameSlot frameSlot = slots.get(varname);
-                        if (frameSlot == null) {
-                            frameSlot = constantSlots.get(varname);
-                            if (frameSlot == null)
-                                throw new Error("Variable was not declared");
-                        }
-                        expressionNode = MJVariableNodeFactory.MJReadLocalVariableNodeGen.create(frameSlot);
+// FrameSlot frameSlot = slots.get(varname);
+// if (frameSlot == null) {
+// frameSlot = constantSlots.get(varname);
+// if (frameSlot == null)
+// throw new Error("Variable was not declared");
+// }
+// expressionNode = MJVariableNodeFactory.MJReadLocalVariableNodeGen.create(frameSlot);
+                        expressionNode = readLocalVar(varname);
                     }
 
                 }
