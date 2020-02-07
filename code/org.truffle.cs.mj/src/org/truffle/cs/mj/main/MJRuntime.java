@@ -17,8 +17,8 @@ import com.oracle.truffle.api.TruffleRuntime;
 public class MJRuntime {
 
     public static void main(String[] args) {
-// parseRD(mjProgramRD);
         parseRD(whileLoopRD);
+// parseRD(whileLoopRD);
 // parseRD(ifProgram);
 // parseRDBenchmark(divAlgorithm);
     }
@@ -48,13 +48,17 @@ public class MJRuntime {
                     + "         }\n"//
                     + "}";
 
-    static String whileLoopRD = "program P {"//
+    static String whileLoopRD = "program P final int k = 3;{"//
                     + " void foo(int i,int j) {print(i+j);return;}" //
-                    + "             void main () char p;{ "//
+                    + "             void main () int p;{ "//
                     + "                 p = 0;\n"//
                     + "                 while(p < 10) {"//
-                    + "                     if(p==5){" + "                         p=p+1;"//
-                    + "                         continue;" + "                     }else{" + "                         print(p);" + "                     }\n"//
+                    + "                     if(p==5){"//
+                    + "                         p=p+1;"//
+                    + "                         continue;"//
+                    + "                     } else {"//
+                    + "                         print(k);"//
+                    + "                     }\n"//
                     + "                     p = p + 1;\n"//
 // + " foo(p,2);\n" //
                     + "                 }"//

@@ -1,6 +1,9 @@
 package org.truffle.cs.mj.nodes;
 
 import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantCharDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantDoubleDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantIntDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.CharDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.DoubleDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.IntDescriptor;
@@ -26,7 +29,10 @@ public class MJVariableNode {
         @Specialization
         public Object readVariable(VirtualFrame frame) {
             try {
-                return frame.getObject(getSlot());
+                FrameSlot frameSlot = getSlot();
+                Object a = frame.getObject(getSlot());
+                System.out.println(frameSlot.toString() + a);
+                return a;
             } catch (FrameSlotTypeException e) {
                 CompilerDirectives.transferToInterpreterAndInvalidate();
                 e.printStackTrace();
@@ -85,6 +91,59 @@ public class MJVariableNode {
         protected final boolean isNotPrimitive() {
             TypeDescriptor type = getType();
             return type != CharDescriptor.getInstance() && type != IntDescriptor.getInstance() && type != DoubleDescriptor.getInstance();
+        }
+    }
+
+    @NodeChild(value = "value", type = MJExpressionNode.class)
+    @NodeField(name = "slot", type = FrameSlot.class)
+    @NodeField(name = "type", type = TypeDescriptor.class)
+    public static abstract class MJWriteConstantLocalVariableNode extends MJStatementNode {
+        protected abstract FrameSlot getSlot();
+
+        protected abstract TypeDescriptor getType();
+
+        @Specialization(guards = "isCharVariable()")
+        public Object execute(VirtualFrame frame, char value) {
+            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Byte);
+            frame.setObject(getSlot(), value);
+            return null;
+        }
+
+        @Specialization(guards = "isIntVariable()")
+        public Object execute(VirtualFrame frame, int value) {
+            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Int);
+            frame.setObject(getSlot(), value);
+            return null;
+        }
+
+        @Specialization(guards = "isDoubleVariable()")
+        public Object execute(VirtualFrame frame, double value) {
+            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Double);
+            frame.setObject(getSlot(), value);
+            return null;
+        }
+
+        @Specialization(guards = "isNotPrimitive()")
+        public Object execute(VirtualFrame frame, Object value) {
+            frame.setObject(getSlot(), value);
+            return null;
+        }
+
+        protected final boolean isCharVariable() {
+            return getType() == ConstantCharDescriptor.getInstance();
+        }
+
+        protected final boolean isIntVariable() {
+            return getType() == ConstantIntDescriptor.getInstance();
+        }
+
+        protected final boolean isDoubleVariable() {
+            return getType() == ConstantDoubleDescriptor.getInstance();
+        }
+
+        protected final boolean isNotPrimitive() {
+            TypeDescriptor type = getType();
+            return type != ConstantCharDescriptor.getInstance() && type != ConstantIntDescriptor.getInstance() && type != ConstantDoubleDescriptor.getInstance();
         }
     }
 }
