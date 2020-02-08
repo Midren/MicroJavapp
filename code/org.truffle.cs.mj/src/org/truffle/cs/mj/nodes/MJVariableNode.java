@@ -32,8 +32,8 @@ public class MJVariableNode {
             try {
                 FrameSlot frameSlot = getSlot();
 
-// System.out.println(frameSlot.toString());
                 Object a = getFrame(frame).getObject(frameSlot);
+// System.out.println(frameSlot.toString() + a);
                 return a;
             } catch (FrameSlotTypeException e) {
                 CompilerDirectives.transferToInterpreterAndInvalidate();

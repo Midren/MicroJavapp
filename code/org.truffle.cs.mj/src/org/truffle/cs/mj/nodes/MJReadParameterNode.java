@@ -22,7 +22,16 @@ public class MJReadParameterNode extends MJExpressionNode {
 
     @Override
     public Object executeGeneric(VirtualFrame frame) {
-        System.out.println(frame.getArguments().length);
-        return frame.getArguments()[index];
+        if (getFrameWithArguments(frame).getArguments()[0] == null)
+            return getFrameWithArguments(frame).getArguments()[index];
+        else
+            return getFrameWithArguments(frame).getArguments()[index - 1];
+    }
+
+    private VirtualFrame getFrameWithArguments(VirtualFrame frame) {
+        while (frame.getArguments().length == 1 && frame.getArguments()[0] instanceof VirtualFrame) {
+            frame = (VirtualFrame) frame.getArguments()[0];
+        }
+        return frame;
     }
 }
