@@ -1,6 +1,7 @@
 package org.truffle.cs.mj.parser;
 
 import org.truffle.cs.mj.parser.identifiertable.IdentifiersTable;
+import org.truffle.cs.mj.parser.identifiertable.TypeTable;
 import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
 
 import com.oracle.truffle.api.frame.FrameDescriptor;
@@ -55,7 +56,7 @@ public class LexicalScope {
     }
 
     public TypeDescriptor getTypeDescriptor(String identifier) {
-        return localIdentifiers.getTypeDescriptor(identifier);
+        return TypeTable.getInstance().getTypeDescriptor(identifier);
     }
 
     public TypeDescriptor getVisibleIdentifierDescriptor(String identifier) {

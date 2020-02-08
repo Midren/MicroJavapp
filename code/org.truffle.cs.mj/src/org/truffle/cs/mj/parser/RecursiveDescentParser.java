@@ -61,6 +61,7 @@ import org.truffle.cs.mj.nodes.MJStatementNode;
 import org.truffle.cs.mj.nodes.MJBinaryNode.AddNode;
 import org.truffle.cs.mj.nodes.MJVariableNode.MJReadLocalVariableNode;
 import org.truffle.cs.mj.nodes.MJVariableNode.MJWriteLocalVariableNode;
+import org.truffle.cs.mj.parser.identifiertable.TypeTable;
 import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.IntDescriptor;
 import org.truffle.cs.mj.nodes.MJVariableNodeFactory;
@@ -71,6 +72,7 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
+import com.oracle.truffle.api.frame.VirtualFrame;
 import com.sun.xml.internal.bind.CycleRecoverable.Context;
 
 public final class RecursiveDescentParser {
@@ -353,9 +355,7 @@ public final class RecursiveDescentParser {
      * ( Type | "void" ) ident "(" [ FormPars ] ")" <br>
      * ( ";" | { VarDecl } Block ) .
      */
-    FrameDescriptor globalFrameDescriptor = new FrameDescriptor();
     LexicalScope currentLexicalScope = new LexicalScope(null, "global");
-    FrameDescriptor currentFrameDescriptor;
 
     public Map<String, FrameSlot> slots = new HashMap<>();
     public Map<String, FrameSlot> constantSlots = new HashMap<>();
@@ -505,9 +505,21 @@ public final class RecursiveDescentParser {
     private MJStatementNode Statement() {
         MJStatementNode curStatementNode = null;
         switch (sym) {
-            // ----- assignment, method call, in- or decrement
+            // ----- assignment, method call, in- or decrement, variable initializaton
             // ----- Designator ( Assignop Expr | ActPars | "++" | "--" ) ";"
+            // ----- OR
+            // ----- Type ident
             case ident:
+                if (TypeTable.getInstance().getAvailableTypes().contains(la.str)) {
+                    VarDecl();
+                    curStatementNode = new MJStatementNode() {
+                        @Override
+                        public Object execute(VirtualFrame frame) {
+                            return null;
+                        }
+                    };
+                    break;
+                }
                 String des = Designator();
                 switch (sym) {
                     case assign:
