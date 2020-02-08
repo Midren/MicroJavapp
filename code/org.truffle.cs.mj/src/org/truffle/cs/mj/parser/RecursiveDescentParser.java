@@ -515,12 +515,30 @@ public final class RecursiveDescentParser {
                         curStatementNode = writeLocalVar(des, Expr());
                         break;
                     case plusas:
+                        Assignop();
+                        curStatementNode = MJVariableNodeFactory.MJAddAssignLocalVariableNodeGen.create(Expr(), currentLexicalScope.getVisibleFrameSlot(des),
+                                        currentLexicalScope.getVisibleIdentifierDescriptor(des));
+                        break;
                     case minusas:
+                        Assignop();
+                        curStatementNode = MJVariableNodeFactory.MJSubAssignLocalVariableNodeGen.create(Expr(), currentLexicalScope.getVisibleFrameSlot(des),
+                                        currentLexicalScope.getVisibleIdentifierDescriptor(des));
+                        break;
                     case timesas:
+                        Assignop();
+                        curStatementNode = MJVariableNodeFactory.MJMulAssignLocalVariableNodeGen.create(Expr(), currentLexicalScope.getVisibleFrameSlot(des),
+                                        currentLexicalScope.getVisibleIdentifierDescriptor(des));
+                        break;
                     case slashas:
+                        Assignop();
+                        curStatementNode = MJVariableNodeFactory.MJDivAssignLocalVariableNodeGen.create(Expr(), currentLexicalScope.getVisibleFrameSlot(des),
+                                        currentLexicalScope.getVisibleIdentifierDescriptor(des));
+                        break;
                     case remas:
-                        throw new Error("Unimplemented");
-                    // break;
+                        Assignop();
+                        curStatementNode = MJVariableNodeFactory.MJRemAssignLocalVariableNodeGen.create(Expr(), currentLexicalScope.getVisibleFrameSlot(des),
+                                        currentLexicalScope.getVisibleIdentifierDescriptor(des));
+                        break;
                     case lpar:
                         List<MJExpressionNode> params = ActPars();
                         // TODO: Check if function exists
