@@ -29,7 +29,7 @@ public class MJInvokeNode extends MJExpressionNode {
 
         // TODO: Maybe explicitly specify null ???
         Object[] argumentValuesObjects = new Object[params.length + 1];
-        for (int i = 0; i < argumentValuesObjects.length; i++) {
+        for (int i = 0; i < params.length; i++) {
             argumentValuesObjects[i + 1] = params[i].executeGeneric(frame);
         }
         return callNode.call(argumentValuesObjects);

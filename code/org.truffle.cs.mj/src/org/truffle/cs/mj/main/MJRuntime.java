@@ -57,8 +57,7 @@ public class MJRuntime {
                     + "                         p=p+1;"//
                     + "                         continue;"//
                     + "                     } else {"//
-                    + "                         print(p);"//
-                    + "                         print(k);"//
+                    + "                         foo(p, p+1);"//
                     + "                     }\n"//
                     + "                     p = p + 1;\n"//
 // + " foo(p,2);\n" //
@@ -133,7 +132,7 @@ public class MJRuntime {
         System.out.println("Calling main function...");
         CallTarget callTarget = runtime.createCallTarget(parser.getMain());
         for (int i = 0; i < 1000; i++) {
-            callTarget.call();
+            callTarget.call(i);
         }
     }
 

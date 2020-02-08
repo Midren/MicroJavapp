@@ -16,12 +16,13 @@ public class MJReadParameterNode extends MJExpressionNode {
     }
 
     public MJReadParameterNode(int index, TypeDescriptor typeDescriptor) {
-        this.index = index;
+        this.index = index + 1;
         this.type = typeDescriptor;
     }
 
     @Override
     public Object executeGeneric(VirtualFrame frame) {
+        System.out.println(frame.getArguments().length);
         return frame.getArguments()[index];
     }
 }
