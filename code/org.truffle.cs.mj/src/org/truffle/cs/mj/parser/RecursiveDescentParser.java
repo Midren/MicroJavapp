@@ -424,19 +424,18 @@ public final class RecursiveDescentParser {
         }
         check(ident);
         String name = t.str;
-// currentLexicalScope = new LexicalScope(null, name);
-        LexicalScope tmp = new LexicalScope(currentLexicalScope, name);
-        currentLexicalScope = tmp;
         check(lpar);
         if (sym == ident) {
             parameterNames = FormPars();
         }
         check(rpar);
+        while (sym == final_) {
+            ConstDecl();
+        }
         while (sym == ident) {
             VarDecl();
         }
         currentFun = new MJFunction(name, Block(), currentLexicalScope.getFrameDescriptor(), funcType == null ? null : currentLexicalScope.getTypeDescriptor(funcType));
-        currentLexicalScope = tmp.getParentScope();
         functions.add(currentFun);
         parameterNames = null;
         return currentFun;
@@ -473,9 +472,10 @@ public final class RecursiveDescentParser {
         LexicalScope innerBlockScope = new LexicalScope(currentLexicalScope, "inner_" + currentLexicalScope.depth);
         currentLexicalScope = innerBlockScope;
         List<MJStatementNode> statements = Statements();
+        MJBlock block = new MJBlock(statements.toArray(new MJStatementNode[statements.size()]), currentLexicalScope.getFrameDescriptor());
         currentLexicalScope = currentLexicalScope.getParentScope();
         check(rbrace);
-        return new MJBlock(statements.toArray(new MJStatementNode[statements.size()]));
+        return block;
     }
 
     private List<MJStatementNode> Statements() {
@@ -700,6 +700,7 @@ public final class RecursiveDescentParser {
         boolean neg = false;
         if (sym == minus) {
             scan();
+            // TODO: Add negative numbers
             neg = true;
         }
         expressionNode = Term();

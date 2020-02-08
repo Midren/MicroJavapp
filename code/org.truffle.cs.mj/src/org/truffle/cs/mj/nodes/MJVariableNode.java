@@ -16,6 +16,7 @@ import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.FrameSlotTypeException;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 public class MJVariableNode {
     @NodeField(name = "slot", type = FrameSlot.class)
@@ -30,14 +31,25 @@ public class MJVariableNode {
         public Object readVariable(VirtualFrame frame) {
             try {
                 FrameSlot frameSlot = getSlot();
-                Object a = frame.getObject(getSlot());
-                System.out.println(frameSlot.toString() + a);
+
+// System.out.println(frameSlot.toString());
+                Object a = getFrame(frame).getObject(frameSlot);
                 return a;
             } catch (FrameSlotTypeException e) {
                 CompilerDirectives.transferToInterpreterAndInvalidate();
                 e.printStackTrace();
                 throw new Error(e);
             }
+        }
+
+        @ExplodeLoop
+        private VirtualFrame getFrame(VirtualFrame frame) {
+            CompilerDirectives.transferToInterpreter();
+            while (!frame.getFrameDescriptor().getSlots().contains(getSlot())) {
+                frame = (VirtualFrame) frame.getArguments()[0];
+            }
+
+            return frame;
         }
     }
 
@@ -49,30 +61,37 @@ public class MJVariableNode {
 
         protected abstract TypeDescriptor getType();
 
+        @ExplodeLoop
+        private VirtualFrame getFrame(VirtualFrame frame) {
+            CompilerDirectives.transferToInterpreter();
+            while (!frame.getFrameDescriptor().getSlots().contains(getSlot())) {
+                frame = (VirtualFrame) frame.getArguments()[0];
+            }
+
+            return frame;
+        }
+
         @Specialization(guards = "isCharVariable()")
         public Object execute(VirtualFrame frame, char value) {
-            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Byte);
-            frame.setObject(getSlot(), value);
+            getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
         @Specialization(guards = "isIntVariable()")
         public Object execute(VirtualFrame frame, int value) {
-            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Int);
-            frame.setObject(getSlot(), value);
+            getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
         @Specialization(guards = "isDoubleVariable()")
         public Object execute(VirtualFrame frame, double value) {
-            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Double);
-            frame.setObject(getSlot(), value);
+            getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
         @Specialization(guards = "isNotPrimitive()")
         public Object execute(VirtualFrame frame, Object value) {
-            frame.setObject(getSlot(), value);
+            getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
@@ -102,30 +121,37 @@ public class MJVariableNode {
 
         protected abstract TypeDescriptor getType();
 
+        @ExplodeLoop
+        private VirtualFrame getFrame(VirtualFrame frame) {
+            CompilerDirectives.transferToInterpreter();
+            while (!frame.getFrameDescriptor().getSlots().contains(getSlot())) {
+                frame = (VirtualFrame) frame.getArguments()[0];
+            }
+
+            return frame;
+        }
+
         @Specialization(guards = "isCharVariable()")
         public Object execute(VirtualFrame frame, char value) {
-            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Byte);
-            frame.setObject(getSlot(), value);
+            getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
         @Specialization(guards = "isIntVariable()")
         public Object execute(VirtualFrame frame, int value) {
-            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Int);
-            frame.setObject(getSlot(), value);
+            getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
         @Specialization(guards = "isDoubleVariable()")
         public Object execute(VirtualFrame frame, double value) {
-            frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Double);
-            frame.setObject(getSlot(), value);
+            getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
         @Specialization(guards = "isNotPrimitive()")
         public Object execute(VirtualFrame frame, Object value) {
-            frame.setObject(getSlot(), value);
+            getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
