@@ -180,4 +180,274 @@ public class MJVariableNode {
                             type instanceof ConstantDoubleDescriptor);
         }
     }
+
+    @NodeChild(value = "value", type = MJExpressionNode.class)
+    @NodeField(name = "slot", type = FrameSlot.class)
+    @NodeField(name = "type", type = TypeDescriptor.class)
+    public static abstract class MJAddAssignLocalVariableNode extends MJStatementNode {
+
+        protected abstract FrameSlot getSlot();
+
+        protected abstract TypeDescriptor getType();
+
+        @ExplodeLoop
+        private VirtualFrame getFrame(VirtualFrame frame) {
+            CompilerDirectives.transferToInterpreter();
+            while (!frame.getFrameDescriptor().getSlots().contains(getSlot())) {
+                frame = (VirtualFrame) frame.getArguments()[0];
+            }
+
+            return frame;
+        }
+
+        protected final boolean isIntVariable() {
+            return getType() == ConstantIntDescriptor.getInstance();
+        }
+
+        protected final boolean isDoubleVariable() {
+            return getType() == ConstantDoubleDescriptor.getInstance();
+        }
+
+        @Specialization(guards = "isIntVariable()")
+        public Object execute(VirtualFrame frame, int value) {
+            try {
+                getFrame(frame).setObject(getSlot(), (int) getFrame(frame).getObject(getSlot()) + value);
+            } catch (FrameSlotTypeException e) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                e.printStackTrace();
+                throw new Error(e);
+            }
+            return null;
+
+        }
+
+        @Specialization(guards = "isDoubleVariable()")
+        public Object execute(VirtualFrame frame, double value) {
+            try {
+                getFrame(frame).setObject(getSlot(), (double) getFrame(frame).getObject(getSlot()) + value);
+            } catch (FrameSlotTypeException e) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                e.printStackTrace();
+                throw new Error(e);
+            }
+            return null;
+        }
+
+    }
+
+    @NodeChild(value = "value", type = MJExpressionNode.class)
+    @NodeField(name = "slot", type = FrameSlot.class)
+    @NodeField(name = "type", type = TypeDescriptor.class)
+    public static abstract class MJSubAssignLocalVariableNode extends MJStatementNode {
+
+        protected abstract FrameSlot getSlot();
+
+        protected abstract TypeDescriptor getType();
+
+        @ExplodeLoop
+        private VirtualFrame getFrame(VirtualFrame frame) {
+            CompilerDirectives.transferToInterpreter();
+            while (!frame.getFrameDescriptor().getSlots().contains(getSlot())) {
+                frame = (VirtualFrame) frame.getArguments()[0];
+            }
+
+            return frame;
+        }
+
+        protected final boolean isIntVariable() {
+            return getType() == ConstantIntDescriptor.getInstance();
+        }
+
+        protected final boolean isDoubleVariable() {
+            return getType() == ConstantDoubleDescriptor.getInstance();
+        }
+
+        @Specialization(guards = "isIntVariable()")
+        public Object execute(VirtualFrame frame, int value) {
+            try {
+                getFrame(frame).setObject(getSlot(), (int) getFrame(frame).getObject(getSlot()) - value);
+            } catch (FrameSlotTypeException e) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                e.printStackTrace();
+                throw new Error(e);
+            }
+            return null;
+
+        }
+
+        @Specialization(guards = "isDoubleVariable()")
+        public Object execute(VirtualFrame frame, double value) {
+            try {
+                getFrame(frame).setObject(getSlot(), (double) getFrame(frame).getObject(getSlot()) - value);
+            } catch (FrameSlotTypeException e) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                e.printStackTrace();
+                throw new Error(e);
+            }
+            return null;
+        }
+
+    }
+
+    @NodeChild(value = "value", type = MJExpressionNode.class)
+    @NodeField(name = "slot", type = FrameSlot.class)
+    @NodeField(name = "type", type = TypeDescriptor.class)
+    public static abstract class MJMulAssignLocalVariableNode extends MJStatementNode {
+
+        protected abstract FrameSlot getSlot();
+
+        protected abstract TypeDescriptor getType();
+
+        @ExplodeLoop
+        private VirtualFrame getFrame(VirtualFrame frame) {
+            CompilerDirectives.transferToInterpreter();
+            while (!frame.getFrameDescriptor().getSlots().contains(getSlot())) {
+                frame = (VirtualFrame) frame.getArguments()[0];
+            }
+
+            return frame;
+        }
+
+        protected final boolean isIntVariable() {
+            return getType() == ConstantIntDescriptor.getInstance();
+        }
+
+        protected final boolean isDoubleVariable() {
+            return getType() == ConstantDoubleDescriptor.getInstance();
+        }
+
+        @Specialization(guards = "isIntVariable()")
+        public Object execute(VirtualFrame frame, int value) {
+            try {
+                getFrame(frame).setObject(getSlot(), (int) getFrame(frame).getObject(getSlot()) * value);
+            } catch (FrameSlotTypeException e) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                e.printStackTrace();
+                throw new Error(e);
+            }
+            return null;
+
+        }
+
+        @Specialization(guards = "isDoubleVariable()")
+        public Object execute(VirtualFrame frame, double value) {
+            try {
+                getFrame(frame).setObject(getSlot(), (double) getFrame(frame).getObject(getSlot()) * value);
+            } catch (FrameSlotTypeException e) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                e.printStackTrace();
+                throw new Error(e);
+            }
+            return null;
+        }
+
+    }
+
+    @NodeChild(value = "value", type = MJExpressionNode.class)
+    @NodeField(name = "slot", type = FrameSlot.class)
+    @NodeField(name = "type", type = TypeDescriptor.class)
+    public static abstract class MJDivAssignLocalVariableNode extends MJStatementNode {
+
+        protected abstract FrameSlot getSlot();
+
+        protected abstract TypeDescriptor getType();
+
+        @ExplodeLoop
+        private VirtualFrame getFrame(VirtualFrame frame) {
+            CompilerDirectives.transferToInterpreter();
+            while (!frame.getFrameDescriptor().getSlots().contains(getSlot())) {
+                frame = (VirtualFrame) frame.getArguments()[0];
+            }
+
+            return frame;
+        }
+
+        protected final boolean isIntVariable() {
+            return getType() == ConstantIntDescriptor.getInstance();
+        }
+
+        protected final boolean isDoubleVariable() {
+            return getType() == ConstantDoubleDescriptor.getInstance();
+        }
+
+        @Specialization(guards = "isIntVariable()")
+        public Object execute(VirtualFrame frame, int value) {
+            try {
+                getFrame(frame).setObject(getSlot(), (int) getFrame(frame).getObject(getSlot()) / value);
+            } catch (FrameSlotTypeException e) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                e.printStackTrace();
+                throw new Error(e);
+            }
+            return null;
+
+        }
+
+        @Specialization(guards = "isDoubleVariable()")
+        public Object execute(VirtualFrame frame, double value) {
+            try {
+                getFrame(frame).setObject(getSlot(), (double) getFrame(frame).getObject(getSlot()) / value);
+            } catch (FrameSlotTypeException e) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                e.printStackTrace();
+                throw new Error(e);
+            }
+            return null;
+        }
+
+    }
+
+    @NodeChild(value = "value", type = MJExpressionNode.class)
+    @NodeField(name = "slot", type = FrameSlot.class)
+    @NodeField(name = "type", type = TypeDescriptor.class)
+    public static abstract class MJRemAssignLocalVariableNode extends MJStatementNode {
+
+        protected abstract FrameSlot getSlot();
+
+        protected abstract TypeDescriptor getType();
+
+        @ExplodeLoop
+        private VirtualFrame getFrame(VirtualFrame frame) {
+            CompilerDirectives.transferToInterpreter();
+            while (!frame.getFrameDescriptor().getSlots().contains(getSlot())) {
+                frame = (VirtualFrame) frame.getArguments()[0];
+            }
+
+            return frame;
+        }
+
+        protected final boolean isIntVariable() {
+            return getType() == ConstantIntDescriptor.getInstance();
+        }
+
+        protected final boolean isDoubleVariable() {
+            return getType() == ConstantDoubleDescriptor.getInstance();
+        }
+
+        @Specialization(guards = "isIntVariable()")
+        public Object execute(VirtualFrame frame, int value) {
+            try {
+                getFrame(frame).setObject(getSlot(), (int) getFrame(frame).getObject(getSlot()) % value);
+            } catch (FrameSlotTypeException e) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                e.printStackTrace();
+                throw new Error(e);
+            }
+            return null;
+
+        }
+
+        @Specialization(guards = "isDoubleVariable()")
+        public Object execute(VirtualFrame frame, double value) {
+            try {
+                getFrame(frame).setObject(getSlot(), (double) getFrame(frame).getObject(getSlot()) % value);
+            } catch (FrameSlotTypeException e) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                e.printStackTrace();
+                throw new Error(e);
+            }
+            return null;
+        }
+
+    }
 }
