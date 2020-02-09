@@ -26,7 +26,6 @@ public class MJInvokeNode extends MJExpressionNode {
     @Override
     @ExplodeLoop
     public Object executeGeneric(VirtualFrame frame) {
-
         Object[] argumentValuesObjects = new Object[params.length + 1];
         for (int i = 0; i < params.length; i++) {
             argumentValuesObjects[i + 1] = params[i].executeGeneric(frame);

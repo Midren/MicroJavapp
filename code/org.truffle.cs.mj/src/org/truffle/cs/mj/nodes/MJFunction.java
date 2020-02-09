@@ -21,6 +21,10 @@ public class MJFunction extends RootNode {
         this.returnType = returnType;
     }
 
+    public void changeBody(MJStatementNode newBody) {
+        this.body = newBody;
+    }
+
     @Override
     public Object execute(VirtualFrame frame) {
         try {

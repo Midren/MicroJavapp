@@ -98,7 +98,6 @@ public final class RecursiveDescentParser {
                         print, read, return_, while_, final_);
         firstMethodDecl = EnumSet.of(void_, ident);
     }
-    // TODO Exercise 3 - 6: implementation of parser
 
     /** Sets of starting tokens for some productions. */
     private EnumSet<Token.Kind> firstExpr, firstStat, firstMethodDecl;
@@ -207,11 +206,7 @@ public final class RecursiveDescentParser {
     }
 
     MJFunctionContext currentContext = new MJFunctionContext();
-
     public List<MJFunction> functions = new ArrayList<>();
-
-    MJFunction currentFun = null;
-
     public HashMap<MJFunction, CallTarget> callAble = new HashMap<MJFunction, CallTarget>();
 
     public MJFunction getFunction(String Name) {
@@ -230,12 +225,25 @@ public final class RecursiveDescentParser {
         return null;
     }
 
+    public MJExpressionNode callFunction(String funcName) {
+        List<MJExpressionNode> params = ActPars();
+        MJFunction caleeFunction = getFunction(funcName);
+        if (caleeFunction == null)
+            throw new Error("Function does not exists");
+        CallTarget callTarget = callAble.get(caleeFunction);
+        if (callTarget == null) {
+            callTarget = Truffle.getRuntime().createCallTarget(caleeFunction);
+            callAble.put(caleeFunction, callTarget);
+        }
+        return new MJInvokeNode(callTarget, params.toArray(new MJExpressionNode[params.size()]), caleeFunction.returnType);
+    }
+
     /**
      * MethodDecl = <br>
      * ( Type | "void" ) ident "(" [ FormPars ] ")" <br>
      * ( ";" | { VarDecl } Block ) .
      */
-    private MJFunction MethodDecl() {
+    private void MethodDecl() {
         String funcType = null;
         if (sym == ident) {
             funcType = Type();
@@ -244,6 +252,7 @@ public final class RecursiveDescentParser {
         } else {
             throw new Error("Method declaration");
         }
+        currentContext.stepInFunction();
         check(ident);
         String name = t.str;
         check(lpar);
@@ -254,9 +263,8 @@ public final class RecursiveDescentParser {
         while (sym == ident) {
             VarDecl();
         }
-        currentFun = new MJFunction(name, Block(), currentContext.getContextFrameDescriptor(), funcType == null ? null : currentContext.getTypeDescriptor(funcType));
-        functions.add(currentFun);
-        return currentFun;
+        functions.add(new MJFunction(name, null, currentContext.getContextFrameDescriptor(), funcType == null ? null : currentContext.getTypeDescriptor(funcType)));
+        functions.get(functions.size() - 1).changeBody(Block());
     }
 
     /** FormPars = Type ident { "," Type ident } . */
@@ -367,16 +375,7 @@ public final class RecursiveDescentParser {
                                         MJBinaryNodeFactory.ModulationNodeGen.create(currentContext.readVariable(des), Expr()));
                         break;
                     case lpar:
-                        List<MJExpressionNode> params = ActPars();
-                        // TODO: Check if function exists
-                        MJFunction caleeFunction = getFunction(des);
-                        CallTarget callTarget = callAble.get(caleeFunction);
-                        if (callTarget == null) {
-                            callTarget = Truffle.getRuntime().createCallTarget(caleeFunction);
-                            callAble.put(caleeFunction, callTarget);
-                        }
-                        MJExpressionNode invoke = new MJInvokeNode(callTarget, params.toArray(new MJExpressionNode[params.size()]), caleeFunction.returnType);
-                        curStatementNode = new MJExpressionStatement(invoke);
+                        curStatementNode = new MJExpressionStatement(callFunction(des));
                         break;
                     case pplus:
                         scan();
@@ -450,8 +449,6 @@ public final class RecursiveDescentParser {
                 des = Designator();
                 check(rpar);
                 check(semicolon);
-// curStatementNode = new MJReadNode(des, currentLexicalScope.getVisibleFrameSlot(des),
-// currentLexicalScope.getVisibleIdentifierDescriptor(des));
                 curStatementNode = currentContext.writeVariable(des, new MJReadNode());
                 break;
             // ----- "print" "(" Expr [ comma number ] ")" ";"
@@ -611,12 +608,11 @@ public final class RecursiveDescentParser {
                 check(rpar);
                 break;
             case ident:
-                String varname = Designator();
+                String name = Designator();
                 if (sym == lpar) {
-                    ActPars();
+                    expressionNode = callFunction(name);
                 } else {
-                    // normal variable node
-                    expressionNode = currentContext.readVariable(varname);
+                    expressionNode = currentContext.readVariable(name);
                 }
                 break;
             case number:
