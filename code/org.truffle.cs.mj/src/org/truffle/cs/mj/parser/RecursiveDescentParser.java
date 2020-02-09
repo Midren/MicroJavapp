@@ -526,27 +526,37 @@ public final class RecursiveDescentParser {
                         break;
                     case plusas:
                         Assignop();
-                        curStatementNode = MJVariableNodeFactory.MJAddAssignLocalVariableNodeGen.create(Expr(), currentLexicalScope.getVisibleFrameSlot(des),
+                        curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
+                                        MJBinaryNodeFactory.AddNodeGen.create(Expr(), readLocalVar(des)),
+                                        currentLexicalScope.getVisibleFrameSlot(des),
                                         currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
                     case minusas:
                         Assignop();
-                        curStatementNode = MJVariableNodeFactory.MJSubAssignLocalVariableNodeGen.create(Expr(), currentLexicalScope.getVisibleFrameSlot(des),
+                        curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
+                                        MJBinaryNodeFactory.SubtractNodeGen.create(Expr(), readLocalVar(des)),
+                                        currentLexicalScope.getVisibleFrameSlot(des),
                                         currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
                     case timesas:
                         Assignop();
-                        curStatementNode = MJVariableNodeFactory.MJMulAssignLocalVariableNodeGen.create(Expr(), currentLexicalScope.getVisibleFrameSlot(des),
+                        curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
+                                        MJBinaryNodeFactory.MultiplicationNodeGen.create(Expr(), readLocalVar(des)),
+                                        currentLexicalScope.getVisibleFrameSlot(des),
                                         currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
                     case slashas:
                         Assignop();
-                        curStatementNode = MJVariableNodeFactory.MJDivAssignLocalVariableNodeGen.create(Expr(), currentLexicalScope.getVisibleFrameSlot(des),
+                        curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
+                                        MJBinaryNodeFactory.DividerNodeGen.create(Expr(), readLocalVar(des)),
+                                        currentLexicalScope.getVisibleFrameSlot(des),
                                         currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
                     case remas:
                         Assignop();
-                        curStatementNode = MJVariableNodeFactory.MJRemAssignLocalVariableNodeGen.create(Expr(), currentLexicalScope.getVisibleFrameSlot(des),
+                        curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
+                                        MJBinaryNodeFactory.ModulationNodeGen.create(Expr(), readLocalVar(des)),
+                                        currentLexicalScope.getVisibleFrameSlot(des),
                                         currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
                     case lpar:

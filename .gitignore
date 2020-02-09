@@ -3,3 +3,4 @@ graal_dumps/
 dists/
 */bin/*
 code/org.truffle.cs.mj/bin/org/
+**/javafilelist.txt
