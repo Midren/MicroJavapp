@@ -552,10 +552,13 @@ public final class RecursiveDescentParser {
         boolean neg = false;
         if (sym == minus) {
             scan();
-            // TODO: Add negative numbers
             neg = true;
         }
         expressionNode = Term();
+        if (neg)
+            expressionNode = MJBinaryNodeFactory.MultiplicationNodeGen.create(
+                            MJConstantNodeFactory.IntNodeGen.create(-1),
+                            expressionNode);
         while (sym == plus || sym == minus) {
             if (sym == plus) {
                 scan();

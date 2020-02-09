@@ -31,12 +31,7 @@ public class MJVariableNode {
         @Specialization
         public Object readVariable(VirtualFrame frame) {
             try {
-                FrameSlot frameSlot = getSlot();
-
-                VirtualFrame frame2 = getFrame(frame);
-                Object a = getFrame(frame).getObject(frameSlot);
-                // System.out.println("\n" + frameSlot.toString() + a);
-                return a;
+                return getFrame(frame).getObject(getSlot());
             } catch (FrameSlotTypeException e) {
                 CompilerDirectives.transferToInterpreterAndInvalidate();
                 e.printStackTrace();
