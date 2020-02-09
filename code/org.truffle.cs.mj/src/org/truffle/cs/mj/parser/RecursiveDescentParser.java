@@ -73,6 +73,7 @@ import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.sun.corba.se.impl.orbutil.closure.Constant;
 import com.sun.xml.internal.bind.CycleRecoverable.Context;
 
 public final class RecursiveDescentParser {
@@ -565,9 +566,19 @@ public final class RecursiveDescentParser {
                         break;
                     case pplus:
                         scan();
+                        curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
+                                        MJBinaryNodeFactory.AddNodeGen.create(MJVariableNodeFactory.MJReadLocalVariableNodeGen.create(currentLexicalScope.getVisibleFrameSlot(des),
+                                                        currentLexicalScope.getVisibleIdentifierDescriptor(des)), MJConstantNodeFactory.IntNodeGen.create(1)),
+                                        currentLexicalScope.getVisibleFrameSlot(des),
+                                        currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
                     case mminus:
                         scan();
+                        curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
+                                        MJBinaryNodeFactory.SubtractNodeGen.create(MJVariableNodeFactory.MJReadLocalVariableNodeGen.create(currentLexicalScope.getVisibleFrameSlot(des),
+                                                        currentLexicalScope.getVisibleIdentifierDescriptor(des)), MJConstantNodeFactory.IntNodeGen.create(1)),
+                                        currentLexicalScope.getVisibleFrameSlot(des),
+                                        currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
                     default:
                         throw new Error("Designator Follow");
