@@ -450,7 +450,9 @@ public final class RecursiveDescentParser {
                 des = Designator();
                 check(rpar);
                 check(semicolon);
-                curStatementNode = new MJReadNode(des, currentLexicalScope.getVisibleFrameSlot(des), currentLexicalScope.getVisibleIdentifierDescriptor(des));
+// curStatementNode = new MJReadNode(des, currentLexicalScope.getVisibleFrameSlot(des),
+// currentLexicalScope.getVisibleIdentifierDescriptor(des));
+                curStatementNode = currentContext.writeVariable(des, new MJReadNode());
                 break;
             // ----- "print" "(" Expr [ comma number ] ")" ";"
             case print:
