@@ -36,6 +36,8 @@ public class LexicalScope {
     }
 
     public void addVariable(String identifier, TypeDescriptor typeDescriptor) {
+        if (isDeclared(identifier))
+            throw new Error("Double declaration");
         localIdentifiers.addVariable(identifier, typeDescriptor);
     }
 
@@ -57,6 +59,14 @@ public class LexicalScope {
 
     public TypeDescriptor getTypeDescriptor(String identifier) {
         return TypeTable.getInstance().getTypeDescriptor(identifier);
+    }
+
+    public TypeDescriptor getTypeDescriptor(String identifier, boolean isConst) {
+        return TypeTable.getInstance().getTypeDescriptor(identifier, isConst);
+    }
+
+    public boolean isDeclared(String identifier) {
+        return getVisibleIdentifierDescriptor(identifier) != null;
     }
 
     public TypeDescriptor getVisibleIdentifierDescriptor(String identifier) {

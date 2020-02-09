@@ -103,6 +103,7 @@ public final class MJVariableNodeFactory {
             }
             assert (state & 0b1) != 0 /* is-active execute(VirtualFrame, char) */;
             assert (isCharVariable());
+            assert (isNotConstant());
             return execute(frameValue, valueValue_);
         }
 
@@ -115,6 +116,7 @@ public final class MJVariableNodeFactory {
             }
             assert (state & 0b10) != 0 /* is-active execute(VirtualFrame, int) */;
             assert (isIntVariable());
+            assert (isNotConstant());
             return execute(frameValue, valueValue_);
         }
 
@@ -127,6 +129,7 @@ public final class MJVariableNodeFactory {
             }
             assert (state & 0b100) != 0 /* is-active execute(VirtualFrame, double) */;
             assert (isDoubleVariable());
+            assert (isNotConstant());
             return execute(frameValue, valueValue_);
         }
 
@@ -135,20 +138,24 @@ public final class MJVariableNodeFactory {
             if ((state & 0b1) != 0 /* is-active execute(VirtualFrame, char) */ && valueValue_ instanceof Character) {
                 char valueValue__ = (char) valueValue_;
                 assert (isCharVariable());
+                assert (isNotConstant());
                 return execute(frameValue, valueValue__);
             }
             if ((state & 0b10) != 0 /* is-active execute(VirtualFrame, int) */ && valueValue_ instanceof Integer) {
                 int valueValue__ = (int) valueValue_;
                 assert (isIntVariable());
+                assert (isNotConstant());
                 return execute(frameValue, valueValue__);
             }
             if ((state & 0b100) != 0 /* is-active execute(VirtualFrame, double) */ && valueValue_ instanceof Double) {
                 double valueValue__ = (double) valueValue_;
                 assert (isDoubleVariable());
+                assert (isNotConstant());
                 return execute(frameValue, valueValue__);
             }
             if ((state & 0b1000) != 0 /* is-active execute(VirtualFrame, Object) */) {
                 assert (isNotPrimitive());
+                assert (isNotConstant());
                 return execute(frameValue, valueValue_);
             }
             CompilerDirectives.transferToInterpreterAndInvalidate();
@@ -159,26 +166,26 @@ public final class MJVariableNodeFactory {
             int state = state_;
             if (valueValue instanceof Character) {
                 char valueValue_ = (char) valueValue;
-                if ((isCharVariable())) {
+                if ((isCharVariable()) && (isNotConstant())) {
                     this.state_ = state = state | 0b1 /* add-active execute(VirtualFrame, char) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Integer) {
                 int valueValue_ = (int) valueValue;
-                if ((isIntVariable())) {
+                if ((isIntVariable()) && (isNotConstant())) {
                     this.state_ = state = state | 0b10 /* add-active execute(VirtualFrame, int) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Double) {
                 double valueValue_ = (double) valueValue;
-                if ((isDoubleVariable())) {
+                if ((isDoubleVariable()) && (isNotConstant())) {
                     this.state_ = state = state | 0b100 /* add-active execute(VirtualFrame, double) */;
                     return execute(frameValue, valueValue_);
                 }
             }
-            if ((isNotPrimitive())) {
+            if ((isNotPrimitive()) && (isNotConstant())) {
                 this.state_ = state = state | 0b1000 /* add-active execute(VirtualFrame, Object) */;
                 return execute(frameValue, valueValue);
             }
