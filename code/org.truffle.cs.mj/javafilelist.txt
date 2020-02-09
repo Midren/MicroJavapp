@@ -21,6 +21,7 @@
 /home/hermann/IDES/ComipelrWinterS/Source/trufflecourse/code/org.truffle.cs.mj/src/org/truffle/cs/mj/parser/RecursiveDescentParser.java
 /home/hermann/IDES/ComipelrWinterS/Source/trufflecourse/code/org.truffle.cs.mj/src/org/truffle/cs/mj/parser/Token.java
 /home/hermann/IDES/ComipelrWinterS/Source/trufflecourse/code/org.truffle.cs.mj/src/org/truffle/cs/mj/parser/identifiertable/IdentifiersTable.java
+/home/hermann/IDES/ComipelrWinterS/Source/trufflecourse/code/org.truffle.cs.mj/src/org/truffle/cs/mj/parser/identifiertable/TypeTable.java
 /home/hermann/IDES/ComipelrWinterS/Source/trufflecourse/code/org.truffle.cs.mj/src/org/truffle/cs/mj/parser/identifiertable/types/ClassTypeDescriptor.java
 /home/hermann/IDES/ComipelrWinterS/Source/trufflecourse/code/org.truffle.cs.mj/src/org/truffle/cs/mj/parser/identifiertable/types/TypeDescriptor.java
 /home/hermann/IDES/ComipelrWinterS/Source/trufflecourse/code/org.truffle.cs.mj/src/org/truffle/cs/mj/parser/identifiertable/types/constants/ConstantBoolDescriptor.java
