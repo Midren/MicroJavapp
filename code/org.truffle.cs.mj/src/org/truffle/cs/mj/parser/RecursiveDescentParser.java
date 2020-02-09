@@ -104,7 +104,7 @@ public final class RecursiveDescentParser {
         la = new Token(Token.Kind.none, 1, 1);
         firstExpr = EnumSet.of(ident, number, charConst, minus, lpar, new_);
         firstStat = EnumSet.of(ident, semicolon, lbrace, break_, continue_, if_,
-                        print, read, return_, while_);
+                        print, read, return_, while_, final_);
         firstMethodDecl = EnumSet.of(void_, ident);
     }
 
@@ -309,7 +309,7 @@ public final class RecursiveDescentParser {
     }
 
     /** ConstDecl = "final" Type ident "=" ( number | charConst ) ";" . */
-    private void ConstDecl() {
+    private MJStatementNode ConstDecl() {
         check(final_);
         String typeName = Type();
         check(ident);
@@ -318,13 +318,14 @@ public final class RecursiveDescentParser {
 // if (sym == number) {
 // scan();
 // createConstLocalVarWrite(name, t.val);
-        createConstLocalVarWrite(name, Expr(), typeName);
+        MJStatementNode ret = createConstLocalVarWrite(typeName, name, Expr());
 // } else if (sym == charConst) {
 // scan();
 // } else {
 // throw new Error("Constant declaration");
 // }
         check(semicolon);
+        return ret;
     }
 
     /** VarDecl = Type ident { "," ident } ";" . */
@@ -376,8 +377,8 @@ public final class RecursiveDescentParser {
         return MJVariableNodeFactory.MJReadLocalVariableNodeGen.create(frameSlot, currentLexicalScope.getVisibleIdentifierDescriptor(varname));
     }
 
-    public MJStatementNode createConstLocalVarWrite(String varname, MJExpressionNode value, String typeName) {
-        TypeDescriptor typeDescriptor = currentLexicalScope.getTypeDescriptor(typeName);
+    public MJStatementNode createConstLocalVarWrite(String typeName, String varname, MJExpressionNode value) {
+        TypeDescriptor typeDescriptor = currentLexicalScope.getTypeDescriptor(typeName, true);
         if (typeDescriptor == null)
             throw new Error("Type " + typeName + " was not defined");
         currentLexicalScope.addVariable(varname, typeDescriptor);
@@ -430,9 +431,6 @@ public final class RecursiveDescentParser {
             parameterNames = FormPars();
         }
         check(rpar);
-        while (sym == final_) {
-            ConstDecl();
-        }
         while (sym == ident) {
             VarDecl();
         }
@@ -584,6 +582,9 @@ public final class RecursiveDescentParser {
                         throw new Error("Designator Follow");
                 }
                 check(semicolon);
+                break;
+            case final_:
+                curStatementNode = ConstDecl();
                 break;
             // ----- "if" "(" Condition ")" Statement [ "else" Statement ]
             case if_:

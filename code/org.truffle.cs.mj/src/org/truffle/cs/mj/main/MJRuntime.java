@@ -49,23 +49,24 @@ public class MJRuntime {
                     + "}";
 
     static String whileLoopRD = "program P {"//
-                    + " void foo(int i,int j) {print(j);return;}" //
-                    + "             void main (int q) final int k = 3; int p;{ "//
-                    + "                 p = 1;\n"//
-                    + "                 while(p < 10) {"//
-                    + "                     int k;\n"//
-                    + "                     k = 7;\n"//
-                    + "                     if(p==5){"//
-                    + "                         p%=2;"//
-                    + "                         continue;"//
-                    + "                     } else {"//
-                    + "                         foo(1,p);"//
-                    + "                     }\n"//
-                    + "                     p += 1;\n"//
-// + " foo(p,2);\n" //
-                    + "                 }"//
-                    + "                 print(k);\n"//
-                    + "             }"//
+                    + " void foo(int i,int j) {" //
+                    + "     print(i+j);return;}" //
+                    + " void main (int q) { "//
+                    + "     int p;\n"//
+                    + "     p = 1;\n"//
+                    + "     while(p < 10) {"//
+                    + "         final int k = p;\n"//
+// + " print(k);\n"
+// + " int k;\n"//
+                    + "         if(p==5){"//
+                    + "             p=p+1;"//
+                    + "             continue;"//
+                    + "         } else {"//
+                    + "             foo(k, p+1);"//
+                    + "         }\n"//
+                    + "             p = p + 1;\n"//
+                    + "     }"//
+                    + " }"//
                     + "}";
     static String ifProgram = "program P {"//
                     + "             void foo(int i,int j) {"//

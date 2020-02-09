@@ -1,6 +1,7 @@
 package org.truffle.cs.mj.nodes;
 
 import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantTypeDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantCharDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantDoubleDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantIntDescriptor;
@@ -32,8 +33,9 @@ public class MJVariableNode {
             try {
                 FrameSlot frameSlot = getSlot();
 
+                VirtualFrame frame2 = getFrame(frame);
                 Object a = getFrame(frame).getObject(frameSlot);
-// System.out.println(frameSlot.toString() + a);
+                // System.out.println("\n" + frameSlot.toString() + a);
                 return a;
             } catch (FrameSlotTypeException e) {
                 CompilerDirectives.transferToInterpreterAndInvalidate();
@@ -71,40 +73,44 @@ public class MJVariableNode {
             return frame;
         }
 
-        @Specialization(guards = "isCharVariable()")
+        @Specialization(guards = {"isCharVariable()", "isNotConstant()"})
         public Object execute(VirtualFrame frame, char value) {
             getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
-        @Specialization(guards = "isIntVariable()")
+        @Specialization(guards = {"isIntVariable()", "isNotConstant()"})
         public Object execute(VirtualFrame frame, int value) {
             getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
-        @Specialization(guards = "isDoubleVariable()")
+        @Specialization(guards = {"isDoubleVariable()", "isNotConstant()"})
         public Object execute(VirtualFrame frame, double value) {
             getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
-        @Specialization(guards = "isNotPrimitive()")
+        @Specialization(guards = {"isNotPrimitive()", "isNotConstant()"})
         public Object execute(VirtualFrame frame, Object value) {
             getFrame(frame).setObject(getSlot(), value);
             return null;
         }
 
+        protected final boolean isNotConstant() {
+            return !(getType() instanceof ConstantTypeDescriptor);
+        }
+
         protected final boolean isCharVariable() {
-            return getType() == CharDescriptor.getInstance();
+            return getType() instanceof CharDescriptor;
         }
 
         protected final boolean isIntVariable() {
-            return getType() == IntDescriptor.getInstance();
+            return getType() instanceof IntDescriptor;
         }
 
         protected final boolean isDoubleVariable() {
-            return getType() == DoubleDescriptor.getInstance();
+            return getType() instanceof DoubleDescriptor;
         }
 
         protected final boolean isNotPrimitive() {
@@ -156,20 +162,22 @@ public class MJVariableNode {
         }
 
         protected final boolean isCharVariable() {
-            return getType() == ConstantCharDescriptor.getInstance();
+            return getType() instanceof ConstantCharDescriptor;
         }
 
         protected final boolean isIntVariable() {
-            return getType() == ConstantIntDescriptor.getInstance();
+            return getType() instanceof ConstantIntDescriptor;
         }
 
         protected final boolean isDoubleVariable() {
-            return getType() == ConstantDoubleDescriptor.getInstance();
+            return getType() instanceof ConstantDoubleDescriptor;
         }
 
         protected final boolean isNotPrimitive() {
             TypeDescriptor type = getType();
-            return type != ConstantCharDescriptor.getInstance() && type != ConstantIntDescriptor.getInstance() && type != ConstantDoubleDescriptor.getInstance();
+            return !(type instanceof ConstantCharDescriptor ||
+                            type instanceof ConstantIntDescriptor ||
+                            type instanceof ConstantDoubleDescriptor);
         }
     }
 
