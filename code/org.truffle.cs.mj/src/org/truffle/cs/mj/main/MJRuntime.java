@@ -29,7 +29,6 @@ public class MJRuntime {
                     + "        double a, b;          \n"//
                     + "        a = 3;                \n"//
                     + "        b = -5;               \n"//
-                    + "        print(b / a);         \n"//
                     + "        return p;\n"//
                     + "    }\n"//
                     + "}";
