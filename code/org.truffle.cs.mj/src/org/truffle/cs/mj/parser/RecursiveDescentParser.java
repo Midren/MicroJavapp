@@ -55,6 +55,7 @@ import org.truffle.cs.mj.nodes.MJExpressionStatement;
 import org.truffle.cs.mj.nodes.MJFunction;
 import org.truffle.cs.mj.nodes.MJInvokeNode;
 import org.truffle.cs.mj.nodes.MJPrintNodeGen;
+import org.truffle.cs.mj.nodes.MJReadNode;
 import org.truffle.cs.mj.nodes.MJReadParameterNode;
 import org.truffle.cs.mj.nodes.MJReturnNode;
 import org.truffle.cs.mj.nodes.MJStatementNode;
@@ -499,9 +500,10 @@ public final class RecursiveDescentParser {
             case read:
                 scan();
                 check(lpar);
-                Designator();
+                des = Designator();
                 check(rpar);
                 check(semicolon);
+                curStatementNode = new MJReadNode(des, currentLexicalScope.getVisibleFrameSlot(des), currentLexicalScope.getVisibleIdentifierDescriptor(des));
                 break;
             // ----- "print" "(" Expr [ comma number ] ")" ";"
             case print:
