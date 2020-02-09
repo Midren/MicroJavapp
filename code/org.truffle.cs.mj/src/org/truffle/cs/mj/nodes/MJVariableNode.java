@@ -1,13 +1,13 @@
 package org.truffle.cs.mj.nodes;
 
 import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
-import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantTypeDescriptor;
-import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantCharDescriptor;
-import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantDoubleDescriptor;
-import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantIntDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.CharDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.DoubleDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.IntDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.primitives.constants.ConstantCharDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.primitives.constants.ConstantDoubleDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.primitives.constants.ConstantIntDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.primitives.constants.ConstantTypeDescriptor;
 
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.NodeChild;
