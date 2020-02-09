@@ -84,6 +84,6 @@
   | [Roman Milishchuck](https://github.com/RomanMilishchuk) | [Hermann Yavorskyi](https://github.com/wardady) |
   | :---: | :---: |
   | <img src="https://i.imgur.com/FtFe4GD.gif"> | <img src="https://66.media.tumblr.com/dd21357585350785d3aa72c2306f1bbf/tumblr_osmh86FMB41qehrvso2_500.gifv"> |
-|  __*` "I am starting to like Java... LoL, I Fooled you." `*__ |  :boom::skull:  |
+|  __*` "I am starting to like Java... LoL, I fooled you." `*__ |  :boom::skull:  |
 
 ---
