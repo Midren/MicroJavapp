@@ -1,6 +1,7 @@
 package org.truffle.cs.mj.nodes;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.CharDescriptor;
@@ -14,13 +15,7 @@ public class MJReadNode extends MJExpressionNode {
 
     @TruffleBoundary
     private static char scanChar() {
-        try {
-            return (char) System.in.read();
-        } catch (IOException e) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            e.printStackTrace();
-            throw new Error("Error while reading from keyboard");
-        }
+        return new Scanner(System.in).next().charAt(0);
     }
 
     @Override
