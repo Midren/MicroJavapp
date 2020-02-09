@@ -18,4 +18,8 @@ public class ClassTypeDescriptor implements TypeDescriptor {
         return null;
     }
 
+    public TypeDescriptor getInstance() {
+        return null;
+    }
+
 }

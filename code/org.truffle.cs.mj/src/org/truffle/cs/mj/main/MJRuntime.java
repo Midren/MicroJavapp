@@ -47,7 +47,7 @@ public class MJRuntime {
                     + "         }\n"//
                     + "}";
 
-    static String whileLoopRD = "program P {"//
+    static String whileLoopRD = "program P final int l = 1; {"//
                     + " void foo(int i,int j) {" //
                     + "     print(i+j);return;}" //
                     + " void main (int q) { "//
@@ -60,7 +60,7 @@ public class MJRuntime {
                     + "             p -= 1;"//
                     + "             continue;"//
                     + "         } else {"//
-                    + "             foo(k, p+1);"//
+                    + "             foo(k, l);"//
                     + "         }\n"//
                     + "         p += 1;\n"//
                     + "     }"//
@@ -146,7 +146,7 @@ public class MJRuntime {
         TruffleRuntime runtime = Truffle.getRuntime();
         System.out.println("Calling main function...");
         CallTarget callTarget = runtime.createCallTarget(parser.getMain());
-        System.out.println("### the next step I can immediately think of would be adding Coin Type for Ethereum to hardware-wallet-go##############################################################");
+        System.out.println("#################################################################");
         Random r = new Random(17);
 
         long start = System.currentTimeMillis();

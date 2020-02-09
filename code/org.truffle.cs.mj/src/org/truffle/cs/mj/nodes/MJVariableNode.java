@@ -115,7 +115,9 @@ public class MJVariableNode {
 
         protected final boolean isNotPrimitive() {
             TypeDescriptor type = getType();
-            return type != CharDescriptor.getInstance() && type != IntDescriptor.getInstance() && type != DoubleDescriptor.getInstance();
+            return !(type instanceof CharDescriptor &&
+                            type instanceof IntDescriptor &&
+                            type instanceof DoubleDescriptor);
         }
     }
 

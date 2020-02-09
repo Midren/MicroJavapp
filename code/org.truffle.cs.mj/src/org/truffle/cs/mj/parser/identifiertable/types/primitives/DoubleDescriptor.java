@@ -8,7 +8,7 @@ public class DoubleDescriptor implements TypeDescriptor {
 
     private static DoubleDescriptor instance = new DoubleDescriptor();
 
-    public static DoubleDescriptor getInstance() {
+    public DoubleDescriptor getInstance() {
         return instance;
     }
 

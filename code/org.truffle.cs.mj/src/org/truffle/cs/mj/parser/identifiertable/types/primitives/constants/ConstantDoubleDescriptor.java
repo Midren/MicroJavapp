@@ -6,7 +6,8 @@ public class ConstantDoubleDescriptor extends DoubleDescriptor implements Consta
 
     private static ConstantDoubleDescriptor instance = new ConstantDoubleDescriptor();
 
-    public static ConstantDoubleDescriptor getInstance() {
+    @Override
+    public ConstantDoubleDescriptor getInstance() {
         return instance;
     }
 

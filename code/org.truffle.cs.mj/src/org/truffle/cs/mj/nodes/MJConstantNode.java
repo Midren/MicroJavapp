@@ -15,7 +15,7 @@ public abstract class MJConstantNode extends MJExpressionNode {
 
         @Override
         public TypeDescriptor getType() {
-            return CharDescriptor.getInstance();
+            return new CharDescriptor().getInstance();
         }
 
         public CharNode(char constant) {
@@ -33,7 +33,7 @@ public abstract class MJConstantNode extends MJExpressionNode {
 
         @Override
         public TypeDescriptor getType() {
-            return IntDescriptor.getInstance();
+            return new IntDescriptor().getInstance();
         }
 
         public IntNode(int constant) {
@@ -51,7 +51,7 @@ public abstract class MJConstantNode extends MJExpressionNode {
 
         @Override
         public TypeDescriptor getType() {
-            return BoolDescriptor.getInstance();
+            return new BoolDescriptor().getInstance();
         }
 
         public BoolNode(boolean constant) {
@@ -69,7 +69,7 @@ public abstract class MJConstantNode extends MJExpressionNode {
 
         @Override
         public TypeDescriptor getType() {
-            return DoubleDescriptor.getInstance();
+            return new DoubleDescriptor().getInstance();
         }
 
         public DoubleNode(double constant) {

@@ -8,7 +8,7 @@ public class BoolDescriptor implements TypeDescriptor {
 
     private static BoolDescriptor instance = new BoolDescriptor();
 
-    public static BoolDescriptor getInstance() {
+    public BoolDescriptor getInstance() {
         return instance;
     }
 

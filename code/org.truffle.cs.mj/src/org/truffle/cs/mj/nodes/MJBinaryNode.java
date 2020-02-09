@@ -103,7 +103,7 @@ public abstract class MJBinaryNode extends MJExpressionNode {
     public static abstract class EqualNode extends MJBinaryNode {
         @Override
         public TypeDescriptor getType() {
-            return BoolDescriptor.getInstance();
+            return new BoolDescriptor().getInstance();
         }
 
         @Specialization
@@ -131,7 +131,7 @@ public abstract class MJBinaryNode extends MJExpressionNode {
     public static abstract class NotEqualNode extends MJBinaryNode {
         @Override
         public TypeDescriptor getType() {
-            return BoolDescriptor.getInstance();
+            return new BoolDescriptor().getInstance();
         }
 
         @Specialization
@@ -159,7 +159,7 @@ public abstract class MJBinaryNode extends MJExpressionNode {
     public static abstract class LessNode extends MJBinaryNode {
         @Override
         public TypeDescriptor getType() {
-            return BoolDescriptor.getInstance();
+            return new BoolDescriptor().getInstance();
         }
 
         @Specialization
@@ -176,7 +176,7 @@ public abstract class MJBinaryNode extends MJExpressionNode {
     public static abstract class LessEqualNode extends MJBinaryNode {
         @Override
         public TypeDescriptor getType() {
-            return BoolDescriptor.getInstance();
+            return new BoolDescriptor().getInstance();
         }
 
         @Specialization
@@ -193,7 +193,7 @@ public abstract class MJBinaryNode extends MJExpressionNode {
     public static abstract class GreaterNode extends MJBinaryNode {
         @Override
         public TypeDescriptor getType() {
-            return BoolDescriptor.getInstance();
+            return new BoolDescriptor().getInstance();
         }
 
         @Specialization
@@ -210,7 +210,7 @@ public abstract class MJBinaryNode extends MJExpressionNode {
     public static abstract class GreaterEqualNode extends MJBinaryNode {
         @Override
         public TypeDescriptor getType() {
-            return BoolDescriptor.getInstance();
+            return new BoolDescriptor().getInstance();
         }
 
         @Specialization
@@ -227,7 +227,7 @@ public abstract class MJBinaryNode extends MJExpressionNode {
     public static abstract class OrNode extends MJBinaryNode {
         @Override
         public TypeDescriptor getType() {
-            return BoolDescriptor.getInstance();
+            return new BoolDescriptor().getInstance();
         }
 
         @Specialization
@@ -239,7 +239,7 @@ public abstract class MJBinaryNode extends MJExpressionNode {
     public static abstract class AndNode extends MJBinaryNode {
         @Override
         public TypeDescriptor getType() {
-            return BoolDescriptor.getInstance();
+            return new BoolDescriptor().getInstance();
         }
 
         @Specialization

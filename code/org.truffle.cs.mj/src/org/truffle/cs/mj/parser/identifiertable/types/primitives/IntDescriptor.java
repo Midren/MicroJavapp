@@ -4,10 +4,12 @@ import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
 
 import com.oracle.truffle.api.frame.FrameSlotKind;
 
+import sun.net.www.content.audio.wav;
+
 public class IntDescriptor implements TypeDescriptor {
     private static IntDescriptor instance = new IntDescriptor();
 
-    public static IntDescriptor getInstance() {
+    public IntDescriptor getInstance() {
         return instance;
     }
 

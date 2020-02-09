@@ -7,7 +7,7 @@ import com.oracle.truffle.api.frame.FrameSlotKind;
 public class CharDescriptor implements TypeDescriptor {
     private static CharDescriptor instance = new CharDescriptor();
 
-    public static CharDescriptor getInstance() {
+    public CharDescriptor getInstance() {
         return instance;
     }
 

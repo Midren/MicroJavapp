@@ -29,14 +29,14 @@ public class TypeTable {
     }
 
     private void addBuiltinTypes() {
-        typeDescriptors.put("bool", BoolDescriptor.getInstance());
-        typeDescriptors.put("int", IntDescriptor.getInstance());
-        typeDescriptors.put("char", CharDescriptor.getInstance());
-        typeDescriptors.put("double", DoubleDescriptor.getInstance());
-        typeDescriptors.put("const_bool", ConstantBoolDescriptor.getInstance());
-        typeDescriptors.put("const_int", ConstantIntDescriptor.getInstance());
-        typeDescriptors.put("const_char", ConstantCharDescriptor.getInstance());
-        typeDescriptors.put("const_double", ConstantDoubleDescriptor.getInstance());
+        typeDescriptors.put("bool", new BoolDescriptor().getInstance());
+        typeDescriptors.put("int", new IntDescriptor().getInstance());
+        typeDescriptors.put("char", new CharDescriptor().getInstance());
+        typeDescriptors.put("double", new DoubleDescriptor().getInstance());
+        typeDescriptors.put("const_bool", new ConstantBoolDescriptor().getInstance());
+        typeDescriptors.put("const_int", new ConstantIntDescriptor().getInstance());
+        typeDescriptors.put("const_char", new ConstantCharDescriptor().getInstance());
+        typeDescriptors.put("const_double", new ConstantDoubleDescriptor().getInstance());
     }
 
     public Set<String> getAvailableTypes() {
