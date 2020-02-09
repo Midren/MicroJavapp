@@ -25,6 +25,7 @@ public final class MJVariableNodeFactory {
 
         private final FrameSlot slot;
         private final TypeDescriptor type;
+        @CompilationFinal private int state_;
 
         private MJReadLocalVariableNodeGen(FrameSlot slot, TypeDescriptor type) {
             this.slot = slot;
@@ -43,12 +44,61 @@ public final class MJVariableNodeFactory {
 
         @Override
         public Object executeGeneric(VirtualFrame frameValue) {
+            int state = state_;
+            if ((state & 0b1) != 0 /* is-active readBoolVariable(VirtualFrame) */) {
+                assert (isBoolVariable());
+                return readBoolVariable(frameValue);
+            }
+            if ((state & 0b10) != 0 /* is-active readCharVariable(VirtualFrame) */) {
+                assert (isCharVariable());
+                return readCharVariable(frameValue);
+            }
+            if ((state & 0b100) != 0 /* is-active readIntVariable(VirtualFrame) */) {
+                assert (isIntVariable());
+                return readIntVariable(frameValue);
+            }
+            if ((state & 0b1000) != 0 /* is-active readDoubleVariable(VirtualFrame) */) {
+                assert (isDoubleVariable());
+                return readDoubleVariable(frameValue);
+            }
+            if ((state & 0b10000) != 0 /* is-active readVariable(VirtualFrame) */) {
+                return readVariable(frameValue);
+            }
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            return executeAndSpecialize(frameValue);
+        }
+
+        private Object executeAndSpecialize(VirtualFrame frameValue) {
+            int state = state_;
+            if ((isBoolVariable())) {
+                this.state_ = state = state | 0b1 /* add-active readBoolVariable(VirtualFrame) */;
+                return readBoolVariable(frameValue);
+            }
+            if ((isCharVariable())) {
+                this.state_ = state = state | 0b10 /* add-active readCharVariable(VirtualFrame) */;
+                return readCharVariable(frameValue);
+            }
+            if ((isIntVariable())) {
+                this.state_ = state = state | 0b100 /* add-active readIntVariable(VirtualFrame) */;
+                return readIntVariable(frameValue);
+            }
+            if ((isDoubleVariable())) {
+                this.state_ = state = state | 0b1000 /* add-active readDoubleVariable(VirtualFrame) */;
+                return readDoubleVariable(frameValue);
+            }
+            this.state_ = state = state | 0b10000 /* add-active readVariable(VirtualFrame) */;
             return readVariable(frameValue);
         }
 
         @Override
         public NodeCost getCost() {
-            return NodeCost.MONOMORPHIC;
+            int state = state_;
+            if (state == 0b0) {
+                return NodeCost.UNINITIALIZED;
+            } else if ((state & (state - 1)) == 0 /* is-single-active  */) {
+                return NodeCost.MONOMORPHIC;
+            }
+            return NodeCost.POLYMORPHIC;
         }
 
         public static MJReadLocalVariableNode create(FrameSlot slot, TypeDescriptor type) {
@@ -83,78 +133,113 @@ public final class MJVariableNodeFactory {
         @Override
         public Object execute(VirtualFrame frameValue) {
             int state = state_;
-            if ((state & 0b1110) == 0 /* only-active execute(VirtualFrame, char) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
-                return execute_char0(frameValue, state);
-            } else if ((state & 0b1101) == 0 /* only-active execute(VirtualFrame, int) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
-                return execute_int1(frameValue, state);
-            } else if ((state & 0b1011) == 0 /* only-active execute(VirtualFrame, double) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
-                return execute_double2(frameValue, state);
+            if ((state & 0b111110) == 0 /* only-active execute(VirtualFrame, boolean) */ && state != 0  /* is-not execute(VirtualFrame, boolean) && execute(VirtualFrame, char) && executeImplicitDouble(VirtualFrame, int) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
+                return execute_boolean0(frameValue, state);
+            } else if ((state & 0b111101) == 0 /* only-active execute(VirtualFrame, char) */ && state != 0  /* is-not execute(VirtualFrame, boolean) && execute(VirtualFrame, char) && executeImplicitDouble(VirtualFrame, int) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
+                return execute_char1(frameValue, state);
+            } else if ((state & 0b110011) == 0 /* only-active executeImplicitDouble(VirtualFrame, int) && execute(VirtualFrame, int) */ && state != 0  /* is-not execute(VirtualFrame, boolean) && execute(VirtualFrame, char) && executeImplicitDouble(VirtualFrame, int) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
+                return execute_int2(frameValue, state);
+            } else if ((state & 0b101111) == 0 /* only-active execute(VirtualFrame, double) */ && state != 0  /* is-not execute(VirtualFrame, boolean) && execute(VirtualFrame, char) && executeImplicitDouble(VirtualFrame, int) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
+                return execute_double3(frameValue, state);
             } else {
-                return execute_generic3(frameValue, state);
+                return execute_generic4(frameValue, state);
             }
         }
 
-        private Object execute_char0(VirtualFrame frameValue, int state) {
+        private Object execute_boolean0(VirtualFrame frameValue, int state) {
+            boolean valueValue_;
+            try {
+                valueValue_ = this.value_.executeBool(frameValue);
+            } catch (UnexpectedResultException ex) {
+                return executeAndSpecialize(frameValue, ex.getResult());
+            }
+            assert (state & 0b1) != 0 /* is-active execute(VirtualFrame, boolean) */;
+            assert (isBoolVariable());
+            assert (isNotConstant());
+            return execute(frameValue, valueValue_);
+        }
+
+        private Object execute_char1(VirtualFrame frameValue, int state) {
             char valueValue_;
             try {
                 valueValue_ = this.value_.executeChar(frameValue);
             } catch (UnexpectedResultException ex) {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
-            assert (state & 0b1) != 0 /* is-active execute(VirtualFrame, char) */;
+            assert (state & 0b10) != 0 /* is-active execute(VirtualFrame, char) */;
             assert (isCharVariable());
             assert (isNotConstant());
             return execute(frameValue, valueValue_);
         }
 
-        private Object execute_int1(VirtualFrame frameValue, int state) {
+        private Object execute_int2(VirtualFrame frameValue, int state) {
             int valueValue_;
             try {
                 valueValue_ = this.value_.executeI32(frameValue);
             } catch (UnexpectedResultException ex) {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
-            assert (state & 0b10) != 0 /* is-active execute(VirtualFrame, int) */;
-            assert (isIntVariable());
-            assert (isNotConstant());
-            return execute(frameValue, valueValue_);
+            if ((state & 0b100) != 0 /* is-active executeImplicitDouble(VirtualFrame, int) */) {
+                assert (isDoubleVariable());
+                assert (isNotConstant());
+                return executeImplicitDouble(frameValue, valueValue_);
+            }
+            if ((state & 0b1000) != 0 /* is-active execute(VirtualFrame, int) */) {
+                assert (isIntVariable());
+                assert (isNotConstant());
+                return execute(frameValue, valueValue_);
+            }
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            return executeAndSpecialize(frameValue, valueValue_);
         }
 
-        private Object execute_double2(VirtualFrame frameValue, int state) {
+        private Object execute_double3(VirtualFrame frameValue, int state) {
             double valueValue_;
             try {
                 valueValue_ = this.value_.executeDouble(frameValue);
             } catch (UnexpectedResultException ex) {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
-            assert (state & 0b100) != 0 /* is-active execute(VirtualFrame, double) */;
+            assert (state & 0b10000) != 0 /* is-active execute(VirtualFrame, double) */;
             assert (isDoubleVariable());
             assert (isNotConstant());
             return execute(frameValue, valueValue_);
         }
 
-        private Object execute_generic3(VirtualFrame frameValue, int state) {
+        private Object execute_generic4(VirtualFrame frameValue, int state) {
             Object valueValue_ = this.value_.executeGeneric(frameValue);
-            if ((state & 0b1) != 0 /* is-active execute(VirtualFrame, char) */ && valueValue_ instanceof Character) {
+            if ((state & 0b1) != 0 /* is-active execute(VirtualFrame, boolean) */ && valueValue_ instanceof Boolean) {
+                boolean valueValue__ = (boolean) valueValue_;
+                assert (isBoolVariable());
+                assert (isNotConstant());
+                return execute(frameValue, valueValue__);
+            }
+            if ((state & 0b10) != 0 /* is-active execute(VirtualFrame, char) */ && valueValue_ instanceof Character) {
                 char valueValue__ = (char) valueValue_;
                 assert (isCharVariable());
                 assert (isNotConstant());
                 return execute(frameValue, valueValue__);
             }
-            if ((state & 0b10) != 0 /* is-active execute(VirtualFrame, int) */ && valueValue_ instanceof Integer) {
+            if ((state & 0b1100) != 0 /* is-active executeImplicitDouble(VirtualFrame, int) || execute(VirtualFrame, int) */ && valueValue_ instanceof Integer) {
                 int valueValue__ = (int) valueValue_;
-                assert (isIntVariable());
-                assert (isNotConstant());
-                return execute(frameValue, valueValue__);
+                if ((state & 0b100) != 0 /* is-active executeImplicitDouble(VirtualFrame, int) */) {
+                    assert (isDoubleVariable());
+                    assert (isNotConstant());
+                    return executeImplicitDouble(frameValue, valueValue__);
+                }
+                if ((state & 0b1000) != 0 /* is-active execute(VirtualFrame, int) */) {
+                    assert (isIntVariable());
+                    assert (isNotConstant());
+                    return execute(frameValue, valueValue__);
+                }
             }
-            if ((state & 0b100) != 0 /* is-active execute(VirtualFrame, double) */ && valueValue_ instanceof Double) {
+            if ((state & 0b10000) != 0 /* is-active execute(VirtualFrame, double) */ && valueValue_ instanceof Double) {
                 double valueValue__ = (double) valueValue_;
                 assert (isDoubleVariable());
                 assert (isNotConstant());
                 return execute(frameValue, valueValue__);
             }
-            if ((state & 0b1000) != 0 /* is-active execute(VirtualFrame, Object) */) {
-                assert (isNotPrimitive());
+            if ((state & 0b100000) != 0 /* is-active execute(VirtualFrame, Object) */) {
                 assert (isNotConstant());
                 return execute(frameValue, valueValue_);
             }
@@ -164,29 +249,40 @@ public final class MJVariableNodeFactory {
 
         private Object executeAndSpecialize(VirtualFrame frameValue, Object valueValue) {
             int state = state_;
+            if (valueValue instanceof Boolean) {
+                boolean valueValue_ = (boolean) valueValue;
+                if ((isBoolVariable()) && (isNotConstant())) {
+                    this.state_ = state = state | 0b1 /* add-active execute(VirtualFrame, boolean) */;
+                    return execute(frameValue, valueValue_);
+                }
+            }
             if (valueValue instanceof Character) {
                 char valueValue_ = (char) valueValue;
                 if ((isCharVariable()) && (isNotConstant())) {
-                    this.state_ = state = state | 0b1 /* add-active execute(VirtualFrame, char) */;
+                    this.state_ = state = state | 0b10 /* add-active execute(VirtualFrame, char) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Integer) {
                 int valueValue_ = (int) valueValue;
+                if ((isDoubleVariable()) && (isNotConstant())) {
+                    this.state_ = state = state | 0b100 /* add-active executeImplicitDouble(VirtualFrame, int) */;
+                    return executeImplicitDouble(frameValue, valueValue_);
+                }
                 if ((isIntVariable()) && (isNotConstant())) {
-                    this.state_ = state = state | 0b10 /* add-active execute(VirtualFrame, int) */;
+                    this.state_ = state = state | 0b1000 /* add-active execute(VirtualFrame, int) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Double) {
                 double valueValue_ = (double) valueValue;
                 if ((isDoubleVariable()) && (isNotConstant())) {
-                    this.state_ = state = state | 0b100 /* add-active execute(VirtualFrame, double) */;
+                    this.state_ = state = state | 0b10000 /* add-active execute(VirtualFrame, double) */;
                     return execute(frameValue, valueValue_);
                 }
             }
-            if ((isNotPrimitive()) && (isNotConstant())) {
-                this.state_ = state = state | 0b1000 /* add-active execute(VirtualFrame, Object) */;
+            if ((isNotConstant())) {
+                this.state_ = state = state | 0b100000 /* add-active execute(VirtualFrame, Object) */;
                 return execute(frameValue, valueValue);
             }
             throw new UnsupportedSpecializationException(this, new Node[] {this.value_}, valueValue);
@@ -235,72 +331,90 @@ public final class MJVariableNodeFactory {
         @Override
         public Object execute(VirtualFrame frameValue) {
             int state = state_;
-            if ((state & 0b1110) == 0 /* only-active execute(VirtualFrame, char) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
-                return execute_char0(frameValue, state);
-            } else if ((state & 0b1101) == 0 /* only-active execute(VirtualFrame, int) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
-                return execute_int1(frameValue, state);
-            } else if ((state & 0b1011) == 0 /* only-active execute(VirtualFrame, double) */ && state != 0  /* is-not execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
-                return execute_double2(frameValue, state);
+            if ((state & 0b11110) == 0 /* only-active execute(VirtualFrame, boolean) */ && state != 0  /* is-not execute(VirtualFrame, boolean) && execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
+                return execute_boolean0(frameValue, state);
+            } else if ((state & 0b11101) == 0 /* only-active execute(VirtualFrame, char) */ && state != 0  /* is-not execute(VirtualFrame, boolean) && execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
+                return execute_char1(frameValue, state);
+            } else if ((state & 0b11011) == 0 /* only-active execute(VirtualFrame, int) */ && state != 0  /* is-not execute(VirtualFrame, boolean) && execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
+                return execute_int2(frameValue, state);
+            } else if ((state & 0b10111) == 0 /* only-active execute(VirtualFrame, double) */ && state != 0  /* is-not execute(VirtualFrame, boolean) && execute(VirtualFrame, char) && execute(VirtualFrame, int) && execute(VirtualFrame, double) && execute(VirtualFrame, Object) */) {
+                return execute_double3(frameValue, state);
             } else {
-                return execute_generic3(frameValue, state);
+                return execute_generic4(frameValue, state);
             }
         }
 
-        private Object execute_char0(VirtualFrame frameValue, int state) {
+        private Object execute_boolean0(VirtualFrame frameValue, int state) {
+            boolean valueValue_;
+            try {
+                valueValue_ = this.value_.executeBool(frameValue);
+            } catch (UnexpectedResultException ex) {
+                return executeAndSpecialize(frameValue, ex.getResult());
+            }
+            assert (state & 0b1) != 0 /* is-active execute(VirtualFrame, boolean) */;
+            assert (isBoolVariable());
+            return execute(frameValue, valueValue_);
+        }
+
+        private Object execute_char1(VirtualFrame frameValue, int state) {
             char valueValue_;
             try {
                 valueValue_ = this.value_.executeChar(frameValue);
             } catch (UnexpectedResultException ex) {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
-            assert (state & 0b1) != 0 /* is-active execute(VirtualFrame, char) */;
+            assert (state & 0b10) != 0 /* is-active execute(VirtualFrame, char) */;
             assert (isCharVariable());
             return execute(frameValue, valueValue_);
         }
 
-        private Object execute_int1(VirtualFrame frameValue, int state) {
+        private Object execute_int2(VirtualFrame frameValue, int state) {
             int valueValue_;
             try {
                 valueValue_ = this.value_.executeI32(frameValue);
             } catch (UnexpectedResultException ex) {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
-            assert (state & 0b10) != 0 /* is-active execute(VirtualFrame, int) */;
+            assert (state & 0b100) != 0 /* is-active execute(VirtualFrame, int) */;
             assert (isIntVariable());
             return execute(frameValue, valueValue_);
         }
 
-        private Object execute_double2(VirtualFrame frameValue, int state) {
+        private Object execute_double3(VirtualFrame frameValue, int state) {
             double valueValue_;
             try {
                 valueValue_ = this.value_.executeDouble(frameValue);
             } catch (UnexpectedResultException ex) {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
-            assert (state & 0b100) != 0 /* is-active execute(VirtualFrame, double) */;
+            assert (state & 0b1000) != 0 /* is-active execute(VirtualFrame, double) */;
             assert (isDoubleVariable());
             return execute(frameValue, valueValue_);
         }
 
-        private Object execute_generic3(VirtualFrame frameValue, int state) {
+        private Object execute_generic4(VirtualFrame frameValue, int state) {
             Object valueValue_ = this.value_.executeGeneric(frameValue);
-            if ((state & 0b1) != 0 /* is-active execute(VirtualFrame, char) */ && valueValue_ instanceof Character) {
+            if ((state & 0b1) != 0 /* is-active execute(VirtualFrame, boolean) */ && valueValue_ instanceof Boolean) {
+                boolean valueValue__ = (boolean) valueValue_;
+                assert (isBoolVariable());
+                return execute(frameValue, valueValue__);
+            }
+            if ((state & 0b10) != 0 /* is-active execute(VirtualFrame, char) */ && valueValue_ instanceof Character) {
                 char valueValue__ = (char) valueValue_;
                 assert (isCharVariable());
                 return execute(frameValue, valueValue__);
             }
-            if ((state & 0b10) != 0 /* is-active execute(VirtualFrame, int) */ && valueValue_ instanceof Integer) {
+            if ((state & 0b100) != 0 /* is-active execute(VirtualFrame, int) */ && valueValue_ instanceof Integer) {
                 int valueValue__ = (int) valueValue_;
                 assert (isIntVariable());
                 return execute(frameValue, valueValue__);
             }
-            if ((state & 0b100) != 0 /* is-active execute(VirtualFrame, double) */ && valueValue_ instanceof Double) {
+            if ((state & 0b1000) != 0 /* is-active execute(VirtualFrame, double) */ && valueValue_ instanceof Double) {
                 double valueValue__ = (double) valueValue_;
                 assert (isDoubleVariable());
                 return execute(frameValue, valueValue__);
             }
-            if ((state & 0b1000) != 0 /* is-active execute(VirtualFrame, Object) */) {
-                assert (isNotPrimitive());
+            if ((state & 0b10000) != 0 /* is-active execute(VirtualFrame, Object) */) {
                 return execute(frameValue, valueValue_);
             }
             CompilerDirectives.transferToInterpreterAndInvalidate();
@@ -309,32 +423,36 @@ public final class MJVariableNodeFactory {
 
         private Object executeAndSpecialize(VirtualFrame frameValue, Object valueValue) {
             int state = state_;
+            if (valueValue instanceof Boolean) {
+                boolean valueValue_ = (boolean) valueValue;
+                if ((isBoolVariable())) {
+                    this.state_ = state = state | 0b1 /* add-active execute(VirtualFrame, boolean) */;
+                    return execute(frameValue, valueValue_);
+                }
+            }
             if (valueValue instanceof Character) {
                 char valueValue_ = (char) valueValue;
                 if ((isCharVariable())) {
-                    this.state_ = state = state | 0b1 /* add-active execute(VirtualFrame, char) */;
+                    this.state_ = state = state | 0b10 /* add-active execute(VirtualFrame, char) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Integer) {
                 int valueValue_ = (int) valueValue;
                 if ((isIntVariable())) {
-                    this.state_ = state = state | 0b10 /* add-active execute(VirtualFrame, int) */;
+                    this.state_ = state = state | 0b100 /* add-active execute(VirtualFrame, int) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Double) {
                 double valueValue_ = (double) valueValue;
                 if ((isDoubleVariable())) {
-                    this.state_ = state = state | 0b100 /* add-active execute(VirtualFrame, double) */;
+                    this.state_ = state = state | 0b1000 /* add-active execute(VirtualFrame, double) */;
                     return execute(frameValue, valueValue_);
                 }
             }
-            if ((isNotPrimitive())) {
-                this.state_ = state = state | 0b1000 /* add-active execute(VirtualFrame, Object) */;
-                return execute(frameValue, valueValue);
-            }
-            throw new UnsupportedSpecializationException(this, new Node[] {this.value_}, valueValue);
+            this.state_ = state = state | 0b10000 /* add-active execute(VirtualFrame, Object) */;
+            return execute(frameValue, valueValue);
         }
 
         @Override

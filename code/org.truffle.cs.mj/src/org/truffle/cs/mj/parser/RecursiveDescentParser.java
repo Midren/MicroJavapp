@@ -576,7 +576,7 @@ public final class RecursiveDescentParser {
         MJExpressionNode expressionNode = null;
         expressionNode = Factor();
         while (sym == times || sym == slash || sym == rem) {
-            switch (sym) {
+            switch (scan()) {
                 case times:
                     expressionNode = MJBinaryNodeFactory.MultiplicationNodeGen.create(expressionNode, Factor());
                     break;
@@ -589,7 +589,6 @@ public final class RecursiveDescentParser {
                 default:
                     break;
             }
-            scan();
         }
         return expressionNode;
     }

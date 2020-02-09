@@ -15,6 +15,7 @@ import org.truffle.cs.mj.nodes.MJConstantNodeFactory;
 import org.truffle.cs.mj.parser.identifiertable.TypeTable;
 import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.CharDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.primitives.DoubleDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.IntDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.constants.ConstantTypeDescriptor;
 

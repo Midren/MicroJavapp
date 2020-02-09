@@ -25,10 +25,11 @@ public class MJRuntime {
     static String Simplest = ""//
                     + "program Empty{ "//
                     + "    void main(int i) int p; { \n"//
-                    + "        int a, b;             \n"//
-                    + "        a = -3;                \n"//
-                    + "        b = -6;               \n"//
-                    + "        print(a+b);           \n"//
+                    + "        p = 0;                \n"//
+                    + "        double a, b;          \n"//
+                    + "        a = 3;                \n"//
+                    + "        b = -5;               \n"//
+                    + "        print(b / a);         \n"//
                     + "        return p;\n"//
                     + "    }\n"//
                     + "}";
