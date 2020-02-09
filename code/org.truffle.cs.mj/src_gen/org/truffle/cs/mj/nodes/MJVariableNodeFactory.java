@@ -46,19 +46,19 @@ public final class MJVariableNodeFactory {
         public Object executeGeneric(VirtualFrame frameValue) {
             int state = state_;
             if ((state & 0b1) != 0 /* is-active readBoolVariable(VirtualFrame) */) {
-                assert (isBoolVariable());
+                assert (MJExpressionNode.isBoolVariable(getType()));
                 return readBoolVariable(frameValue);
             }
             if ((state & 0b10) != 0 /* is-active readCharVariable(VirtualFrame) */) {
-                assert (isCharVariable());
+                assert (MJExpressionNode.isCharVariable(getType()));
                 return readCharVariable(frameValue);
             }
             if ((state & 0b100) != 0 /* is-active readIntVariable(VirtualFrame) */) {
-                assert (isIntVariable());
+                assert (MJExpressionNode.isIntVariable(getType()));
                 return readIntVariable(frameValue);
             }
             if ((state & 0b1000) != 0 /* is-active readDoubleVariable(VirtualFrame) */) {
-                assert (isDoubleVariable());
+                assert (MJExpressionNode.isDoubleVariable(getType()));
                 return readDoubleVariable(frameValue);
             }
             if ((state & 0b10000) != 0 /* is-active readVariable(VirtualFrame) */) {
@@ -70,19 +70,19 @@ public final class MJVariableNodeFactory {
 
         private Object executeAndSpecialize(VirtualFrame frameValue) {
             int state = state_;
-            if ((isBoolVariable())) {
+            if ((MJExpressionNode.isBoolVariable(getType()))) {
                 this.state_ = state = state | 0b1 /* add-active readBoolVariable(VirtualFrame) */;
                 return readBoolVariable(frameValue);
             }
-            if ((isCharVariable())) {
+            if ((MJExpressionNode.isCharVariable(getType()))) {
                 this.state_ = state = state | 0b10 /* add-active readCharVariable(VirtualFrame) */;
                 return readCharVariable(frameValue);
             }
-            if ((isIntVariable())) {
+            if ((MJExpressionNode.isIntVariable(getType()))) {
                 this.state_ = state = state | 0b100 /* add-active readIntVariable(VirtualFrame) */;
                 return readIntVariable(frameValue);
             }
-            if ((isDoubleVariable())) {
+            if ((MJExpressionNode.isDoubleVariable(getType()))) {
                 this.state_ = state = state | 0b1000 /* add-active readDoubleVariable(VirtualFrame) */;
                 return readDoubleVariable(frameValue);
             }

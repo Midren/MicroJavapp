@@ -50,5 +50,4 @@ public class TypeTable {
     public TypeDescriptor getTypeDescriptor(String identifier, boolean isConst) {
         return typeDescriptors.get((isConst ? "const_" : "") + identifier);
     }
-
 }

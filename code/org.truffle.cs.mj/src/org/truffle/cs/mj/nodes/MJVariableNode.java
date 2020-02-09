@@ -31,7 +31,7 @@ public class MJVariableNode {
         @Override
         public abstract TypeDescriptor getType();
 
-        @Specialization(guards = "isBoolVariable()")
+        @Specialization(guards = "isBoolVariable(getType())")
         public Object readBoolVariable(VirtualFrame frame) {
             try {
                 return getFrame(frame).getBoolean(getSlot());
@@ -42,7 +42,7 @@ public class MJVariableNode {
             }
         }
 
-        @Specialization(guards = "isCharVariable()")
+        @Specialization(guards = "isCharVariable(getType())")
         public Object readCharVariable(VirtualFrame frame) {
             try {
                 return getFrame(frame).getByte(getSlot());
@@ -53,7 +53,7 @@ public class MJVariableNode {
             }
         }
 
-        @Specialization(guards = "isIntVariable()")
+        @Specialization(guards = "isIntVariable(getType())")
         public Object readIntVariable(VirtualFrame frame) {
             try {
                 return getFrame(frame).getInt(getSlot());
@@ -64,7 +64,7 @@ public class MJVariableNode {
             }
         }
 
-        @Specialization(guards = "isDoubleVariable()")
+        @Specialization(guards = "isDoubleVariable(getType())")
         public Object readDoubleVariable(VirtualFrame frame) {
             try {
                 return getFrame(frame).getDouble(getSlot());
@@ -94,30 +94,6 @@ public class MJVariableNode {
             }
 
             return frame;
-        }
-
-        protected boolean isBoolVariable() {
-            return getType() instanceof BoolDescriptor;
-        }
-
-        protected final boolean isCharVariable() {
-            return getType() instanceof CharDescriptor;
-        }
-
-        protected final boolean isIntVariable() {
-            return getType() instanceof IntDescriptor;
-        }
-
-        protected final boolean isDoubleVariable() {
-            return getType() instanceof DoubleDescriptor;
-        }
-
-        protected final boolean isNotPrimitive() {
-            TypeDescriptor type = getType();
-            return !(type instanceof CharDescriptor ||
-                            type instanceof BoolDescriptor ||
-                            type instanceof IntDescriptor ||
-                            type instanceof DoubleDescriptor);
         }
     }
 
