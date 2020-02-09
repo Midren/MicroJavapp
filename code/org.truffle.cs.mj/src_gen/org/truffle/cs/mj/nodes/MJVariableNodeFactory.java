@@ -154,8 +154,8 @@ public final class MJVariableNodeFactory {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
             assert (state & 0b1) != 0 /* is-active execute(VirtualFrame, boolean) */;
-            assert (isBoolVariable());
-            assert (isNotConstant());
+            assert (MJExpressionNode.isBoolVariable(getType()));
+            assert (!(MJExpressionNode.isConstant(getType())));
             return execute(frameValue, valueValue_);
         }
 
@@ -167,8 +167,8 @@ public final class MJVariableNodeFactory {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
             assert (state & 0b10) != 0 /* is-active execute(VirtualFrame, char) */;
-            assert (isCharVariable());
-            assert (isNotConstant());
+            assert (MJExpressionNode.isCharVariable(getType()));
+            assert (!(MJExpressionNode.isConstant(getType())));
             return execute(frameValue, valueValue_);
         }
 
@@ -180,13 +180,13 @@ public final class MJVariableNodeFactory {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
             if ((state & 0b100) != 0 /* is-active executeImplicitDouble(VirtualFrame, int) */) {
-                assert (isDoubleVariable());
-                assert (isNotConstant());
+                assert (MJExpressionNode.isDoubleVariable(getType()));
+                assert (!(MJExpressionNode.isConstant(getType())));
                 return executeImplicitDouble(frameValue, valueValue_);
             }
             if ((state & 0b1000) != 0 /* is-active execute(VirtualFrame, int) */) {
-                assert (isIntVariable());
-                assert (isNotConstant());
+                assert (MJExpressionNode.isIntVariable(getType()));
+                assert (!(MJExpressionNode.isConstant(getType())));
                 return execute(frameValue, valueValue_);
             }
             CompilerDirectives.transferToInterpreterAndInvalidate();
@@ -201,8 +201,8 @@ public final class MJVariableNodeFactory {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
             assert (state & 0b10000) != 0 /* is-active execute(VirtualFrame, double) */;
-            assert (isDoubleVariable());
-            assert (isNotConstant());
+            assert (MJExpressionNode.isDoubleVariable(getType()));
+            assert (!(MJExpressionNode.isConstant(getType())));
             return execute(frameValue, valueValue_);
         }
 
@@ -210,37 +210,37 @@ public final class MJVariableNodeFactory {
             Object valueValue_ = this.value_.executeGeneric(frameValue);
             if ((state & 0b1) != 0 /* is-active execute(VirtualFrame, boolean) */ && valueValue_ instanceof Boolean) {
                 boolean valueValue__ = (boolean) valueValue_;
-                assert (isBoolVariable());
-                assert (isNotConstant());
+                assert (MJExpressionNode.isBoolVariable(getType()));
+                assert (!(MJExpressionNode.isConstant(getType())));
                 return execute(frameValue, valueValue__);
             }
             if ((state & 0b10) != 0 /* is-active execute(VirtualFrame, char) */ && valueValue_ instanceof Character) {
                 char valueValue__ = (char) valueValue_;
-                assert (isCharVariable());
-                assert (isNotConstant());
+                assert (MJExpressionNode.isCharVariable(getType()));
+                assert (!(MJExpressionNode.isConstant(getType())));
                 return execute(frameValue, valueValue__);
             }
             if ((state & 0b1100) != 0 /* is-active executeImplicitDouble(VirtualFrame, int) || execute(VirtualFrame, int) */ && valueValue_ instanceof Integer) {
                 int valueValue__ = (int) valueValue_;
                 if ((state & 0b100) != 0 /* is-active executeImplicitDouble(VirtualFrame, int) */) {
-                    assert (isDoubleVariable());
-                    assert (isNotConstant());
+                    assert (MJExpressionNode.isDoubleVariable(getType()));
+                    assert (!(MJExpressionNode.isConstant(getType())));
                     return executeImplicitDouble(frameValue, valueValue__);
                 }
                 if ((state & 0b1000) != 0 /* is-active execute(VirtualFrame, int) */) {
-                    assert (isIntVariable());
-                    assert (isNotConstant());
+                    assert (MJExpressionNode.isIntVariable(getType()));
+                    assert (!(MJExpressionNode.isConstant(getType())));
                     return execute(frameValue, valueValue__);
                 }
             }
             if ((state & 0b10000) != 0 /* is-active execute(VirtualFrame, double) */ && valueValue_ instanceof Double) {
                 double valueValue__ = (double) valueValue_;
-                assert (isDoubleVariable());
-                assert (isNotConstant());
+                assert (MJExpressionNode.isDoubleVariable(getType()));
+                assert (!(MJExpressionNode.isConstant(getType())));
                 return execute(frameValue, valueValue__);
             }
             if ((state & 0b100000) != 0 /* is-active execute(VirtualFrame, Object) */) {
-                assert (isNotConstant());
+                assert (!(MJExpressionNode.isConstant(getType())));
                 return execute(frameValue, valueValue_);
             }
             CompilerDirectives.transferToInterpreterAndInvalidate();
@@ -251,37 +251,37 @@ public final class MJVariableNodeFactory {
             int state = state_;
             if (valueValue instanceof Boolean) {
                 boolean valueValue_ = (boolean) valueValue;
-                if ((isBoolVariable()) && (isNotConstant())) {
+                if ((MJExpressionNode.isBoolVariable(getType())) && (!(MJExpressionNode.isConstant(getType())))) {
                     this.state_ = state = state | 0b1 /* add-active execute(VirtualFrame, boolean) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Character) {
                 char valueValue_ = (char) valueValue;
-                if ((isCharVariable()) && (isNotConstant())) {
+                if ((MJExpressionNode.isCharVariable(getType())) && (!(MJExpressionNode.isConstant(getType())))) {
                     this.state_ = state = state | 0b10 /* add-active execute(VirtualFrame, char) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Integer) {
                 int valueValue_ = (int) valueValue;
-                if ((isDoubleVariable()) && (isNotConstant())) {
+                if ((MJExpressionNode.isDoubleVariable(getType())) && (!(MJExpressionNode.isConstant(getType())))) {
                     this.state_ = state = state | 0b100 /* add-active executeImplicitDouble(VirtualFrame, int) */;
                     return executeImplicitDouble(frameValue, valueValue_);
                 }
-                if ((isIntVariable()) && (isNotConstant())) {
+                if ((MJExpressionNode.isIntVariable(getType())) && (!(MJExpressionNode.isConstant(getType())))) {
                     this.state_ = state = state | 0b1000 /* add-active execute(VirtualFrame, int) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Double) {
                 double valueValue_ = (double) valueValue;
-                if ((isDoubleVariable()) && (isNotConstant())) {
+                if ((MJExpressionNode.isDoubleVariable(getType())) && (!(MJExpressionNode.isConstant(getType())))) {
                     this.state_ = state = state | 0b10000 /* add-active execute(VirtualFrame, double) */;
                     return execute(frameValue, valueValue_);
                 }
             }
-            if ((isNotConstant())) {
+            if ((!(MJExpressionNode.isConstant(getType())))) {
                 this.state_ = state = state | 0b100000 /* add-active execute(VirtualFrame, Object) */;
                 return execute(frameValue, valueValue);
             }
@@ -352,7 +352,7 @@ public final class MJVariableNodeFactory {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
             assert (state & 0b1) != 0 /* is-active execute(VirtualFrame, boolean) */;
-            assert (isBoolVariable());
+            assert (MJExpressionNode.isBoolVariable(getType()));
             return execute(frameValue, valueValue_);
         }
 
@@ -364,7 +364,7 @@ public final class MJVariableNodeFactory {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
             assert (state & 0b10) != 0 /* is-active execute(VirtualFrame, char) */;
-            assert (isCharVariable());
+            assert (MJExpressionNode.isCharVariable(getType()));
             return execute(frameValue, valueValue_);
         }
 
@@ -376,7 +376,7 @@ public final class MJVariableNodeFactory {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
             assert (state & 0b100) != 0 /* is-active execute(VirtualFrame, int) */;
-            assert (isIntVariable());
+            assert (MJExpressionNode.isIntVariable(getType()));
             return execute(frameValue, valueValue_);
         }
 
@@ -388,7 +388,7 @@ public final class MJVariableNodeFactory {
                 return executeAndSpecialize(frameValue, ex.getResult());
             }
             assert (state & 0b1000) != 0 /* is-active execute(VirtualFrame, double) */;
-            assert (isDoubleVariable());
+            assert (MJExpressionNode.isDoubleVariable(getType()));
             return execute(frameValue, valueValue_);
         }
 
@@ -396,22 +396,22 @@ public final class MJVariableNodeFactory {
             Object valueValue_ = this.value_.executeGeneric(frameValue);
             if ((state & 0b1) != 0 /* is-active execute(VirtualFrame, boolean) */ && valueValue_ instanceof Boolean) {
                 boolean valueValue__ = (boolean) valueValue_;
-                assert (isBoolVariable());
+                assert (MJExpressionNode.isBoolVariable(getType()));
                 return execute(frameValue, valueValue__);
             }
             if ((state & 0b10) != 0 /* is-active execute(VirtualFrame, char) */ && valueValue_ instanceof Character) {
                 char valueValue__ = (char) valueValue_;
-                assert (isCharVariable());
+                assert (MJExpressionNode.isCharVariable(getType()));
                 return execute(frameValue, valueValue__);
             }
             if ((state & 0b100) != 0 /* is-active execute(VirtualFrame, int) */ && valueValue_ instanceof Integer) {
                 int valueValue__ = (int) valueValue_;
-                assert (isIntVariable());
+                assert (MJExpressionNode.isIntVariable(getType()));
                 return execute(frameValue, valueValue__);
             }
             if ((state & 0b1000) != 0 /* is-active execute(VirtualFrame, double) */ && valueValue_ instanceof Double) {
                 double valueValue__ = (double) valueValue_;
-                assert (isDoubleVariable());
+                assert (MJExpressionNode.isDoubleVariable(getType()));
                 return execute(frameValue, valueValue__);
             }
             if ((state & 0b10000) != 0 /* is-active execute(VirtualFrame, Object) */) {
@@ -425,28 +425,28 @@ public final class MJVariableNodeFactory {
             int state = state_;
             if (valueValue instanceof Boolean) {
                 boolean valueValue_ = (boolean) valueValue;
-                if ((isBoolVariable())) {
+                if ((MJExpressionNode.isBoolVariable(getType()))) {
                     this.state_ = state = state | 0b1 /* add-active execute(VirtualFrame, boolean) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Character) {
                 char valueValue_ = (char) valueValue;
-                if ((isCharVariable())) {
+                if ((MJExpressionNode.isCharVariable(getType()))) {
                     this.state_ = state = state | 0b10 /* add-active execute(VirtualFrame, char) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Integer) {
                 int valueValue_ = (int) valueValue;
-                if ((isIntVariable())) {
+                if ((MJExpressionNode.isIntVariable(getType()))) {
                     this.state_ = state = state | 0b100 /* add-active execute(VirtualFrame, int) */;
                     return execute(frameValue, valueValue_);
                 }
             }
             if (valueValue instanceof Double) {
                 double valueValue_ = (double) valueValue;
-                if ((isDoubleVariable())) {
+                if ((MJExpressionNode.isDoubleVariable(getType()))) {
                     this.state_ = state = state | 0b1000 /* add-active execute(VirtualFrame, double) */;
                     return execute(frameValue, valueValue_);
                 }

@@ -1,5 +1,6 @@
 package org.truffle.cs.mj.nodes;
 
+import org.truffle.cs.mj.parser.identifiertable.TypeTable;
 import org.truffle.cs.mj.parser.identifiertable.types.TypeDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.BoolDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.CharDescriptor;
@@ -12,6 +13,7 @@ import org.truffle.cs.mj.parser.identifiertable.types.primitives.constants.Const
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.constants.ConstantTypeDescriptor;
 
 import com.oracle.truffle.api.CompilerDirectives;
+import com.oracle.truffle.api.dsl.ImportStatic;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -100,6 +102,7 @@ public class MJVariableNode {
     @NodeChild(value = "value", type = MJExpressionNode.class)
     @NodeField(name = "slot", type = FrameSlot.class)
     @NodeField(name = "type", type = TypeDescriptor.class)
+    @ImportStatic(MJExpressionNode.class)
     public static abstract class MJWriteLocalVariableNode extends MJStatementNode {
         protected abstract FrameSlot getSlot();
 
@@ -115,66 +118,47 @@ public class MJVariableNode {
             return frame;
         }
 
-        @Specialization(guards = {"isBoolVariable()", "isNotConstant()"})
+        @Specialization(guards = {"isBoolVariable(getType())", "!isConstant(getType())"})
         public Object execute(VirtualFrame frame, boolean value) {
             getFrame(frame).setBoolean(getSlot(), value);
             return null;
         }
 
-        @Specialization(guards = {"isCharVariable()", "isNotConstant()"})
+        @Specialization(guards = {"isCharVariable(getType())", "!isConstant(getType())"})
         public Object execute(VirtualFrame frame, char value) {
             getFrame(frame).setByte(getSlot(), (byte) value);
             return null;
         }
 
-        @Specialization(guards = {"isDoubleVariable()", "isNotConstant()"})
+        @Specialization(guards = {"isDoubleVariable(getType())", "!isConstant(getType())"})
         public Object executeImplicitDouble(VirtualFrame frame, int value) {
             getFrame(frame).setDouble(getSlot(), (double) value);
             return null;
         }
 
-        @Specialization(guards = {"isIntVariable()", "isNotConstant()"})
+        @Specialization(guards = {"isIntVariable(getType())", "!isConstant(getType())"})
         public Object execute(VirtualFrame frame, int value) {
             getFrame(frame).setInt(getSlot(), value);
             return null;
         }
 
-        @Specialization(guards = {"isDoubleVariable()", "isNotConstant()"})
+        @Specialization(guards = {"isDoubleVariable(getType())", "!isConstant(getType())"})
         public Object execute(VirtualFrame frame, double value) {
             getFrame(frame).setDouble(getSlot(), value);
             return null;
         }
 
-        @Specialization(guards = "isNotConstant()")
+        @Specialization(guards = "!isConstant(getType())")
         public Object execute(VirtualFrame frame, Object value) {
             getFrame(frame).setObject(getSlot(), value);
             return null;
-        }
-
-        protected final boolean isNotConstant() {
-            return !(getType() instanceof ConstantTypeDescriptor);
-        }
-
-        protected final boolean isBoolVariable() {
-            return getType() instanceof CharDescriptor;
-        }
-
-        protected final boolean isCharVariable() {
-            return getType() instanceof CharDescriptor;
-        }
-
-        protected final boolean isIntVariable() {
-            return getType() instanceof IntDescriptor;
-        }
-
-        protected final boolean isDoubleVariable() {
-            return getType() instanceof DoubleDescriptor;
         }
     }
 
     @NodeChild(value = "value", type = MJExpressionNode.class)
     @NodeField(name = "slot", type = FrameSlot.class)
     @NodeField(name = "type", type = TypeDescriptor.class)
+    @ImportStatic(MJExpressionNode.class)
     public static abstract class MJWriteConstantLocalVariableNode extends MJStatementNode {
         protected abstract FrameSlot getSlot();
 
@@ -190,25 +174,25 @@ public class MJVariableNode {
             return frame;
         }
 
-        @Specialization(guards = "isBoolVariable()")
+        @Specialization(guards = "isBoolVariable(getType())")
         public Object execute(VirtualFrame frame, boolean value) {
             getFrame(frame).setBoolean(getSlot(), value);
             return null;
         }
 
-        @Specialization(guards = "isCharVariable()")
+        @Specialization(guards = "isCharVariable(getType())")
         public Object execute(VirtualFrame frame, char value) {
             getFrame(frame).setByte(getSlot(), (byte) value);
             return null;
         }
 
-        @Specialization(guards = "isIntVariable()")
+        @Specialization(guards = "isIntVariable(getType())")
         public Object execute(VirtualFrame frame, int value) {
             getFrame(frame).setInt(getSlot(), value);
             return null;
         }
 
-        @Specialization(guards = "isDoubleVariable()")
+        @Specialization(guards = "isDoubleVariable(getType())")
         public Object execute(VirtualFrame frame, double value) {
             getFrame(frame).setDouble(getSlot(), value);
             return null;
@@ -219,22 +203,5 @@ public class MJVariableNode {
             getFrame(frame).setObject(getSlot(), value);
             return null;
         }
-
-        protected final boolean isBoolVariable() {
-            return getType() instanceof BoolDescriptor;
-        }
-
-        protected final boolean isCharVariable() {
-            return getType() instanceof CharDescriptor;
-        }
-
-        protected final boolean isIntVariable() {
-            return getType() instanceof IntDescriptor;
-        }
-
-        protected final boolean isDoubleVariable() {
-            return getType() instanceof DoubleDescriptor;
-        }
-
     }
 }
