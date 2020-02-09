@@ -74,11 +74,17 @@
   - [x] Declaring variables inside of funtions/blocks;
   - [x] Declaring constant variables inside the functions/blocks;
   - [x] Constant variables can be initialized with expression, not only literal (inside of the block, global variables suport only literal initilization);
-  - [x] Supportied types: __*Integer*__, __*Boolean*__, __*Character*__, __*Double*__;
+  - [x] Supported types: __*Integer*__, __*Boolean*__, __*Character*__, __*Double*__;
   ---
   ### Not implemented yet :fast_forward:
-  - [ ] *Nodes for arrays were implementes, but to work corectly with scoping syste, there is still work to be done;*
-  - [ ] __*TO BE DONE*__;
+   <img align="right" src="https://external-preview.redd.it/YUekcxC1fM0eptolWQcUNwJmEJSDnBrBHIrYEyuR_9M.jpg?width=216&crop=smart&auto=webp&s=9581d79964d1b7de50680d5e6ce652c56632a486" height="200">
+   
+  - [ ] __*Arrays*__ *- Nodes for arrays were implemented, but to work corectly with scoping system, there is still work to be done*;
+  - [ ] __*Classes*__ - __*TBD*__;
+  - [ ] __*For/Foreach*__ - *After adding arrays, to make work with them more convinient*;
+  - [ ] __*auto keyword*__ - *For type deduction*;
+  - [ ] __*Ternary operator*__ - *The functional way, is the righ way*;
+  
   ---
   ## Team :bulb:
   | [Roman Milishchuck](https://github.com/RomanMilishchuk) | [Hermann Yavorskyi](https://github.com/wardady) |
