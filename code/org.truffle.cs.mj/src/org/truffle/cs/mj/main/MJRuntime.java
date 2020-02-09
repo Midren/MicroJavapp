@@ -52,6 +52,9 @@ public class MJRuntime {
                     + "     print(i+j);return;}" //
                     + " void main (int q) { "//
                     + "     int p;\n"//
+                    + "     char c;\n"//
+                    + "     read(c);\n"//
+                    + "     print(c);\n"//
                     + "     p = 1;\n"//
                     + "     while(p <= 10) {"//
                     + "         final int k = p;\n"//
@@ -133,7 +136,7 @@ public class MJRuntime {
         TruffleRuntime runtime = Truffle.getRuntime();
         System.out.println("Calling main function...");
         CallTarget callTarget = runtime.createCallTarget(parser.getMain());
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 2; i++) {
             callTarget.call(i);
         }
     }
