@@ -11,7 +11,6 @@ import org.truffle.cs.mj.parser.RecursiveDescentParser;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
-import com.oracle.truffle.api.TruffleLanguage.ContextReference;
 import com.oracle.truffle.api.TruffleRuntime;
 
 public class MJRuntime {
@@ -54,17 +53,18 @@ public class MJRuntime {
                     + " void main (int q) { "//
                     + "     int p;\n"//
                     + "     p = 1;\n"//
-                    + "     while(p < 10) {"//
-                    + "         final int k = p;\n"//
-// + " print(k);\n"
+                    + "     while(p <= 10) {"//
+// + " final int k = p;\n"//
 // + " int k;\n"//
-                    + "         if(p==5){"//
-                    + "             p=p+1;"//
+                    + "         if(p == 5){"//
+                    + "             p *= 2;\n"//
+                    + "             p -= 1;"//
                     + "             continue;"//
                     + "         } else {"//
-                    + "             foo(k, p+1);"//
+                    + "             print(p);\n"
+// + " foo(k, p+1);"//
                     + "         }\n"//
-                    + "             p = p + 1;\n"//
+                    + "         p += 1;\n"//
                     + "     }"//
                     + " }"//
                     + "}";

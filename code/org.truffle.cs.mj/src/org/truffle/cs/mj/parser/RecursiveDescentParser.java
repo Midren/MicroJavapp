@@ -107,165 +107,17 @@ public final class RecursiveDescentParser {
                         print, read, return_, while_, final_);
         firstMethodDecl = EnumSet.of(void_, ident);
     }
-
-    public static enum CompOp {
-        eq,
-        ne,
-        lt,
-        le,
-        gt,
-        ge;
-
-        public static CompOp invert(CompOp op) {
-            switch (op) {
-                case eq:
-                    return ne;
-                case ne:
-                    return eq;
-                case lt:
-                    return ge;
-                case le:
-                    return gt;
-                case gt:
-                    return le;
-                case ge:
-                    return lt;
-            }
-            throw new IllegalArgumentException("Unexpected compare operator");
-        }
-    }
-
-    private static enum Operands {
-        B(1), // byte ( 8 bit signed)
-        S(2), // short (16 bit signed)
-        W(4); // word (32 bit signed)
-
-        /** Size in bytes (8 bit) */
-        public final int size;
-
-        Operands(int size) {
-            this.size = size;
-        }
-    }
-
-    private static final Operands[] B = new Operands[]{Operands.B};
-    private static final Operands[] S = new Operands[]{Operands.S};
-    private static final Operands[] W = new Operands[]{Operands.W};
-    private static final Operands[] BB = new Operands[]{Operands.B,
-                    Operands.B};
-
-    public static enum OpCode {
-        load(B), //
-        load_0, //
-        load_1, //
-        load_2, //
-        load_3, //
-        store(B), //
-        store_0, //
-        store_1, //
-        store_2, //
-        store_3, //
-        getstatic(S), //
-        putstatic(S), //
-        getfield(S), //
-        putfield(S), //
-        const_0, //
-        const_1, //
-        const_2, //
-        const_3, //
-        const_4, //
-        const_5, //
-        const_m1, //
-        const_(W), //
-        add, //
-        sub, //
-        mul, //
-        div, //
-        rem, //
-        neg, //
-        shl, //
-        shr, //
-        inc(BB), //
-        new_(S), //
-        newarray(B), //
-        aload, //
-        astore, //
-        baload, //
-        bastore, //
-        arraylength, //
-        pop, //
-        dup, //
-        dup2, //
-        jmp(S), //
-        jeq(S), //
-        jne(S), //
-        jlt(S), //
-        jle(S), //
-        jgt(S), //
-        jge(S), //
-        call(S), //
-        return_, //
-        enter(BB), //
-        exit, //
-        read, //
-        print, //
-        bread, //
-        bprint, //
-        trap(B), //
-        nop;
-
-        private final Operands[] ops;
-
-        private OpCode(Operands... operands) {
-            this.ops = operands;
-        }
-
-        protected Collection<Operands> getOps() {
-            return Arrays.asList(ops);
-        }
-
-        public int numOps() {
-            return ops.length;
-        }
-
-        public int getOpsSize() {
-            int size = 0;
-            for (Operands op : ops) {
-                size += op.size;
-            }
-            return size;
-        }
-
-        public int code() {
-            return ordinal() + 1;
-        }
-
-        public String cleanName() {
-            String name = name();
-            if (name.endsWith("_")) {
-                name = name.substring(0, name.length() - 1);
-            }
-            return name;
-        }
-
-        public static OpCode get(int code) {
-            if (code < 1 || code > values().length) {
-                return null;
-            }
-            return values()[code - 1];
-        }
-    }
-
     // TODO Exercise 3 - 6: implementation of parser
 
     /** Sets of starting tokens for some productions. */
     private EnumSet<Token.Kind> firstExpr, firstStat, firstMethodDecl;
 
     /** Reads ahead one symbol. */
-    private void scan() {
+    private Token.Kind scan() {
         t = la;
         la = scanner.next();
         sym = la.kind;
+        return t.kind;
     }
 
     /** Verifies symbol and reads ahead. */
@@ -522,41 +374,41 @@ public final class RecursiveDescentParser {
                 String des = Designator();
                 switch (sym) {
                     case assign:
-                        Assignop();
+                        scan();
                         curStatementNode = writeLocalVar(des, Expr());
                         break;
                     case plusas:
-                        Assignop();
+                        scan();
                         curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
-                                        MJBinaryNodeFactory.AddNodeGen.create(Expr(), readLocalVar(des)),
+                                        MJBinaryNodeFactory.AddNodeGen.create(readLocalVar(des), Expr()),
                                         currentLexicalScope.getVisibleFrameSlot(des),
                                         currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
                     case minusas:
-                        Assignop();
+                        scan();
                         curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
-                                        MJBinaryNodeFactory.SubtractNodeGen.create(Expr(), readLocalVar(des)),
+                                        MJBinaryNodeFactory.SubtractNodeGen.create(readLocalVar(des), Expr()),
                                         currentLexicalScope.getVisibleFrameSlot(des),
                                         currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
                     case timesas:
-                        Assignop();
+                        scan();
                         curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
-                                        MJBinaryNodeFactory.MultiplicationNodeGen.create(Expr(), readLocalVar(des)),
+                                        MJBinaryNodeFactory.MultiplicationNodeGen.create(readLocalVar(des), Expr()),
                                         currentLexicalScope.getVisibleFrameSlot(des),
                                         currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
                     case slashas:
-                        Assignop();
+                        scan();
                         curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
-                                        MJBinaryNodeFactory.DividerNodeGen.create(Expr(), readLocalVar(des)),
+                                        MJBinaryNodeFactory.DividerNodeGen.create(readLocalVar(des), Expr()),
                                         currentLexicalScope.getVisibleFrameSlot(des),
                                         currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
                     case remas:
-                        Assignop();
+                        scan();
                         curStatementNode = MJVariableNodeFactory.MJWriteLocalVariableNodeGen.create(
-                                        MJBinaryNodeFactory.ModulationNodeGen.create(Expr(), readLocalVar(des)),
+                                        MJBinaryNodeFactory.ModulationNodeGen.create(readLocalVar(des), Expr()),
                                         currentLexicalScope.getVisibleFrameSlot(des),
                                         currentLexicalScope.getVisibleIdentifierDescriptor(des));
                         break;
@@ -696,7 +548,6 @@ public final class RecursiveDescentParser {
 
     /** Condition = CondTerm { "||" CondTerm } . */
     private MJExpressionNode Condition() {
-// MJExpressionNode expressionNode = null;
         MJExpressionNode expressionNode = CondTerm();
         while (sym == or) {
             scan();
@@ -711,7 +562,6 @@ public final class RecursiveDescentParser {
         while (sym == and) {
             scan();
             expressionNode = MJBinaryNodeFactory.AndNodeGen.create(expressionNode, CondFact());
-// CondFact();
         }
         return expressionNode;
 
@@ -720,24 +570,23 @@ public final class RecursiveDescentParser {
     /** CondFact = Expr Relop Expr . */
     private MJExpressionNode CondFact() {
         MJExpressionNode expressionNode = Expr();
-        CompOp comp = Relop();
-        switch (comp) {
-            case ne:
+        switch (scan()) {
+            case neq:
                 expressionNode = MJBinaryNodeFactory.NotEqualNodeGen.create(expressionNode, Expr());
                 break;
-            case lt:
+            case lss:
                 expressionNode = MJBinaryNodeFactory.LessNodeGen.create(expressionNode, Expr());
                 break;
-            case le:
+            case leq:
                 expressionNode = MJBinaryNodeFactory.LessEqualNodeGen.create(expressionNode, Expr());
                 break;
-            case eq:
+            case eql:
                 expressionNode = MJBinaryNodeFactory.EqualNodeGen.create(expressionNode, Expr());
                 break;
-            case ge:
+            case geq:
                 expressionNode = MJBinaryNodeFactory.GreaterEqualNodeGen.create(expressionNode, Expr());
                 break;
-            case gt:
+            case gtr:
                 expressionNode = MJBinaryNodeFactory.GreaterNodeGen.create(expressionNode, Expr());
                 break;
             default:
@@ -758,10 +607,10 @@ public final class RecursiveDescentParser {
         expressionNode = Term();
         while (sym == plus || sym == minus) {
             if (sym == plus) {
-                Addop();
+                scan();
                 expressionNode = MJBinaryNodeFactory.AddNodeGen.create(expressionNode, Term());
             } else if (sym == minus) {
-                Addop();
+                scan();
                 expressionNode = MJBinaryNodeFactory.SubtractNodeGen.create(expressionNode, Term());
             }
         }
@@ -773,11 +622,11 @@ public final class RecursiveDescentParser {
         MJExpressionNode expressionNode = null;
         expressionNode = Factor();
         while (sym == times || sym == slash || sym == rem) {
-            switch (Mulop()) {
-                case mul:
+            switch (sym) {
+                case times:
                     expressionNode = MJBinaryNodeFactory.MultiplicationNodeGen.create(expressionNode, Factor());
                     break;
-                case div:
+                case slash:
                     expressionNode = MJBinaryNodeFactory.DividerNodeGen.create(expressionNode, Factor());
                     break;
                 case rem:
@@ -786,6 +635,7 @@ public final class RecursiveDescentParser {
                 default:
                     break;
             }
+            scan();
         }
         return expressionNode;
     }
@@ -868,114 +718,6 @@ public final class RecursiveDescentParser {
             }
         }
         return t.str;
-    }
-
-    /** Assignop = "=" | "+=" | "-=" | "*=" | "/=" | "%=" . */
-    private OpCode Assignop() {
-        OpCode op = OpCode.store;
-        switch (sym) {
-            case assign:
-                op = OpCode.store;
-                scan();
-                break;
-            case plusas:
-                op = OpCode.add;
-                scan();
-                break;
-            case minusas:
-                op = OpCode.sub;
-                scan();
-                break;
-            case timesas:
-                op = OpCode.mul;
-                scan();
-                break;
-            case slashas:
-                op = OpCode.div;
-                scan();
-                break;
-            case remas:
-                op = OpCode.rem;
-                scan();
-                break;
-            default:
-                throw new Error("invalid assign operation");
-        }
-        return op;
-    }
-
-    /** Relop = "==" | "!=" | ">" | ">=" | "<" | "<=" . */
-    private CompOp Relop() {
-        CompOp op = CompOp.eq;
-        switch (sym) {
-            case eql:
-                op = CompOp.eq;
-                scan();
-                break;
-            case neq:
-                op = CompOp.ne;
-                scan();
-                break;
-            case lss:
-                op = CompOp.lt;
-                scan();
-                break;
-            case leq:
-                op = CompOp.le;
-                scan();
-                break;
-            case gtr:
-                op = CompOp.gt;
-                scan();
-                break;
-            case geq:
-                op = CompOp.ge;
-                scan();
-                break;
-            default:
-                throw new Error("invalid rel operation " + sym);
-        }
-        return op;
-    }
-
-    /** Addop = "+" | "-" . */
-    private OpCode Addop() {
-        OpCode op = OpCode.add;
-        switch (sym) {
-            case plus:
-                op = OpCode.add;
-                scan();
-                break;
-            case minus:
-                op = OpCode.sub;
-                scan();
-                break;
-            default:
-                throw new Error("invalid add operation");
-        }
-        return op;
-    }
-
-    /** Mulop = "*" | "/" | "%" . */
-    private OpCode Mulop() {
-        OpCode op = OpCode.mul;
-        switch (sym) {
-            case times:
-                op = OpCode.mul;
-                scan();
-                break;
-            case slash:
-                op = OpCode.div;
-                scan();
-                break;
-            case rem:
-                op = OpCode.rem;
-                scan();
-                break;
-            default:
-                throw new Error("invalid mul operation");
-        }
-        return op;
     }
 
     public void parse() {
