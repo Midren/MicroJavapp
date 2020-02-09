@@ -42,6 +42,10 @@ public class MJFunctionContext {
         currentLexicalScope = currentLexicalScope.getParentScope();
     }
 
+    public void stepInFunction() {
+        parameterNames = new HashMap<>();
+    }
+
     public void createGlobalConstant(String typeName, String varname, Object value) {
         if (isDeclared(varname))
             throw new Error("Double declaration");
@@ -105,10 +109,15 @@ public class MJFunctionContext {
     }
 
     private boolean isDeclared(String varname) {
-        if (globalConstVars.containsKey(varname))
+        if (globalConstVars.containsKey(varname)) {
+            System.out.println(globalConstVars);
             return true;
-        if (parameterNames.containsKey(varname))
+        }
+        if (parameterNames.containsKey(varname)) {
+            System.out.println(parameterNames);
+            System.out.println(varname);
             return true;
+        }
         if (currentLexicalScope.getVisibleFrameSlot(varname) != null)
             return true;
         return false;

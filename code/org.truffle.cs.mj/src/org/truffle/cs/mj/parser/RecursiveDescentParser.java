@@ -225,6 +225,19 @@ public final class RecursiveDescentParser {
         return null;
     }
 
+    public MJExpressionNode callFunction(String funcName) {
+        List<MJExpressionNode> params = ActPars();
+        MJFunction caleeFunction = getFunction(funcName);
+        if (caleeFunction == null)
+            throw new Error("Function does not exists");
+        CallTarget callTarget = callAble.get(caleeFunction);
+        if (callTarget == null) {
+            callTarget = Truffle.getRuntime().createCallTarget(caleeFunction);
+            callAble.put(caleeFunction, callTarget);
+        }
+        return new MJInvokeNode(callTarget, params.toArray(new MJExpressionNode[params.size()]), caleeFunction.returnType);
+    }
+
     /**
      * MethodDecl = <br>
      * ( Type | "void" ) ident "(" [ FormPars ] ")" <br>
@@ -239,6 +252,7 @@ public final class RecursiveDescentParser {
         } else {
             throw new Error("Method declaration");
         }
+        currentContext.stepInFunction();
         check(ident);
         String name = t.str;
         check(lpar);
@@ -249,7 +263,8 @@ public final class RecursiveDescentParser {
         while (sym == ident) {
             VarDecl();
         }
-        functions.add(new MJFunction(name, Block(), currentContext.getContextFrameDescriptor(), funcType == null ? null : currentContext.getTypeDescriptor(funcType)));
+        functions.add(new MJFunction(name, null, currentContext.getContextFrameDescriptor(), funcType == null ? null : currentContext.getTypeDescriptor(funcType)));
+        functions.get(functions.size() - 1).changeBody(Block());
     }
 
     /** FormPars = Type ident { "," Type ident } . */
@@ -360,17 +375,7 @@ public final class RecursiveDescentParser {
                                         MJBinaryNodeFactory.ModulationNodeGen.create(currentContext.readVariable(des), Expr()));
                         break;
                     case lpar:
-                        List<MJExpressionNode> params = ActPars();
-                        MJFunction caleeFunction = getFunction(des);
-                        if (caleeFunction == null)
-                            throw new Error("Function does not exists");
-                        CallTarget callTarget = callAble.get(caleeFunction);
-                        if (callTarget == null) {
-                            callTarget = Truffle.getRuntime().createCallTarget(caleeFunction);
-                            callAble.put(caleeFunction, callTarget);
-                        }
-                        MJExpressionNode invoke = new MJInvokeNode(callTarget, params.toArray(new MJExpressionNode[params.size()]), caleeFunction.returnType);
-                        curStatementNode = new MJExpressionStatement(invoke);
+                        curStatementNode = new MJExpressionStatement(callFunction(des));
                         break;
                     case pplus:
                         scan();
@@ -603,12 +608,11 @@ public final class RecursiveDescentParser {
                 check(rpar);
                 break;
             case ident:
-                String varname = Designator();
+                String name = Designator();
                 if (sym == lpar) {
-                    ActPars();
+                    expressionNode = callFunction(name);
                 } else {
-                    // normal variable node
-                    expressionNode = currentContext.readVariable(varname);
+                    expressionNode = currentContext.readVariable(name);
                 }
                 break;
             case number:

@@ -16,20 +16,24 @@ import com.oracle.truffle.api.TruffleRuntime;
 public class MJRuntime {
 
     public static void main(String[] args) {
-        parseRD(Simplest);
+// parseRD(SimpleRecursive);
 // parseRD(whileLoopRD);
 // parseRD(ifProgram);
-// parseRDBenchmark(divAlgorithm);
+        parseRDBenchmark(divAlgorithm);
     }
 
-    static String Simplest = ""//
+    static String SimpleRecursive = ""//
                     + "program Empty{ "//
-                    + "    void main(int i) int p; { \n"//
-                    + "        p = 0;                \n"//
-                    + "        double a, b;          \n"//
-                    + "        a = 3;                \n"//
-                    + "        b = -5;               \n"//
-                    + "        return p;\n"//
+                    + "    int fib(int i) {                  \n"//
+                    + "        if(i <= 1) { \n"//
+                    + "            return i;                  \n"//
+                    + "        } else { \n"//
+                    + "            return fib(i-1) + fib(i-2);\n"//
+                    + "        } \n"//
+                    + "    }\n"//
+                    + "    void main(int k) int p; { \n"//
+                    + "        p = 6;                \n"//
+                    + "        print(fib(p));        \n"//
                     + "    }\n"//
                     + "}";
 
@@ -112,7 +116,9 @@ public class MJRuntime {
                     + "                     return mul(b,a);"//
                     + "                 }"//
                     + "                 sum = 0;"//
-                    + "                 i =abs(b);"//
+                    // TODO: Add abs function
+// + " i =abs(b);"//
+                    + "                 i = b;"//
                     + "                 while(i>0) {"//
                     + "                     sum = sum +a;"//
                     + "                     i = i-1;"//
@@ -135,8 +141,8 @@ public class MJRuntime {
         TruffleRuntime runtime = Truffle.getRuntime();
         System.out.println("Calling main function...");
         CallTarget callTarget = runtime.createCallTarget(parser.getMain());
-        for (int i = 0; i < 2; i++) {
-            callTarget.call(i);
+        for (int i = 1; i < 5; i++) {
+            callTarget.call(i, i - 1);
         }
     }
 
