@@ -8,10 +8,10 @@ import org.truffle.cs.mj.parser.identifiertable.types.primitives.BoolDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.CharDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.DoubleDescriptor;
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.IntDescriptor;
-import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantBoolDescriptor;
-import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantCharDescriptor;
-import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantDoubleDescriptor;
-import org.truffle.cs.mj.parser.identifiertable.types.constants.ConstantIntDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.primitives.constants.ConstantBoolDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.primitives.constants.ConstantCharDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.primitives.constants.ConstantDoubleDescriptor;
+import org.truffle.cs.mj.parser.identifiertable.types.primitives.constants.ConstantIntDescriptor;
 
 public class TypeTable {
 

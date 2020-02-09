@@ -1,4 +1,4 @@
-package org.truffle.cs.mj.parser.identifiertable.types.constants;
+package org.truffle.cs.mj.parser.identifiertable.types.primitives.constants;
 
 import org.truffle.cs.mj.parser.identifiertable.types.primitives.BoolDescriptor;
 
