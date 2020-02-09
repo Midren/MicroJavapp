@@ -76,9 +76,11 @@
   - [x] Constant variables can be initialized with expression, not only literal (inside of the block, global variables suport only literal initilization);
   - [x] Supported types: __*Integer*__, __*Boolean*__, __*Character*__, __*Double*__;
   ---
-  ### Not implemented yet :fast_forward:
-   <img align="right" src="https://external-preview.redd.it/YUekcxC1fM0eptolWQcUNwJmEJSDnBrBHIrYEyuR_9M.jpg?width=216&crop=smart&auto=webp&s=9581d79964d1b7de50680d5e6ce652c56632a486" height="200">
-   
+  
+  <img align="right" src="https://external-preview.redd.it/YUekcxC1fM0eptolWQcUNwJmEJSDnBrBHIrYEyuR_9M.jpg?width=216&crop=smart&auto=webp&s=9581d79964d1b7de50680d5e6ce652c56632a486" height="200">
+ 
+ ### Not implemented yet :fast_forward:
+  
   - [ ] __*Arrays*__ *- Nodes for arrays were implemented, but to work corectly with scoping system, there is still work to be done*;
   - [ ] __*Classes*__ - __*TBD*__;
   - [ ] __*For/Foreach*__ - *After adding arrays, to make work with them more convinient*;
